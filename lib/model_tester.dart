@@ -54,6 +54,9 @@ class ModelPrepper {
 }
 
 class ModelTester {
+  StaticTestBloc bloc;
+  ModelTester(this.bloc);
+
   Future<Map<String, String>> loadDataMap(
       {String folderName, int numPerClass}) async {
     Map<String, String> dataMap = await DataBuilder()
@@ -66,12 +69,11 @@ class ModelTester {
       double imgStd,
       double imgMean,
       Stream<List<PerformanceData>> resultsStream,
-      StaticTestBloc staticBlock
       }) async {
     int countTrue = 0;
     int countFalse = 0;
     int oneIfTrue = 0;
-    print('#################### Loading model ###########################');
+    print('#################### mean:$imgMean ###########################');
     print("#################### getting to the testing ##################");
 
     for (String imgPath in dataMap.keys) {
@@ -95,14 +97,16 @@ class ModelTester {
           oneIfTrue = 0;
         }
 
-        staticBlock.addPerformaceSnapshot(
-          [PerformanceData(
-            countFalse: countFalse,
-            coutTrue: countTrue,
-            recognitionTime: 20,
-            result: '20'
-          )]
-        );
+        bloc.addInt(oneIfTrue);
+
+        // bloc.addPerformaceSnapshot(
+        //   [PerformanceData(
+        //     countFalse: countFalse,
+        //     coutTrue: countTrue,
+        //     recognitionTime: 20,
+        //     result: '20'
+        //   )]
+        // );
         
       }
 
@@ -122,6 +126,6 @@ class ModelTester {
 
     testModelWithParams(
         dataMap: dataMap, imgStd: testSetup.imgStd, imgMean: testSetup.imgMean,
-        staticBlock:_block);
+        );
   }
 }

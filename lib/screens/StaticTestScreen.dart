@@ -6,12 +6,18 @@ import 'package:provider/provider.dart';
 
 class StaticTestScreen extends StatefulWidget {
 
-  final StaticTestBloc _block = StaticTestBloc();
-
   _StaticTestScreenState createState() => _StaticTestScreenState();
 }
 
 class _StaticTestScreenState extends State<StaticTestScreen> {
+  StaticTestBloc _block = StaticTestBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    ModelTester _modelTester = ModelTester(_block);
+  }
+
   int _modelIndex = 2;
   double _selectedMean = 125;
   double _selectedStd = 48;
@@ -70,7 +76,15 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
   // }
 
   Widget _performanceResults(){
-    
+    return StreamBuilder<int>(
+      stream: _block.intStream,
+      initialData: 0,
+      builder: (BuildContext context, AsyncSnapshot<int> snapshot){
+        return Container(
+
+          child: Text('this data yo! ${snapshot.data}'));
+      },
+    );
   }
 
   Widget _setMeanContainer() {
@@ -120,14 +134,14 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
         ModelData model = models[_modelIndex];
         model.imgStd = _selectedStd;
         model.imgMean = _selectedMean;
-        widget._block.startStaticTest(model);
+        _block.startStaticTest(model);
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context);
+    // final appState = Provider.of<AppState>(context);
 
     return Scaffold(
       body: ListView(
@@ -137,7 +151,7 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
           _setMeanContainer(),
           _setStdContainer(),
           _testModelButtom(),
-          // _performanceResults()
+          _performanceResults()
         ],
       ),
     );
