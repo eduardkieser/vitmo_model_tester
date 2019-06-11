@@ -11,11 +11,12 @@ class StaticTestScreen extends StatefulWidget {
 
 class _StaticTestScreenState extends State<StaticTestScreen> {
   StaticTestBloc _block = StaticTestBloc();
+  ModelTester _modelTester;
 
   @override
   void initState() {
     super.initState();
-    ModelTester _modelTester = ModelTester(_block);
+    _modelTester = ModelTester(_block);
   }
 
   int _modelIndex = 2;
@@ -75,14 +76,34 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
   //   );
   // }
 
-  Widget _performanceResults(){
-    return StreamBuilder<int>(
+  Widget _accResults(){
+    return StreamBuilder<double>(
       stream: _block.intStream,
       initialData: 0,
-      builder: (BuildContext context, AsyncSnapshot<int> snapshot){
+      builder: (BuildContext context, AsyncSnapshot<double> snapshot){
         return Container(
+          alignment: Alignment.center,
+          child: Text('mean accuracy!            ${snapshot.data.toStringAsFixed(5)}',
+          style: TextStyle(
+            fontSize: 20
+          ),
+          ));
+      },
+    );
+  }
 
-          child: Text('this data yo! ${snapshot.data}'));
+  Widget _durResults(){
+    return StreamBuilder<double>(
+      stream: _block.durationStream,
+      initialData: 0,
+      builder: (BuildContext context, AsyncSnapshot<double> snapshot){
+        return Container(
+          alignment: Alignment.center,
+          child: Text('mean recognition time ${snapshot.data.toStringAsFixed(5)}',
+          style: TextStyle(
+            fontSize: 20
+          ),
+          ));
       },
     );
   }
@@ -139,6 +160,24 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
     );
   }
 
+    Widget _stopTestButtom() {
+    return FlatButton(
+      child: Text('Stop Benchmark'),
+      onPressed: () {
+        _modelTester.isTesting=false;
+      },
+    );
+  }
+
+    Widget _clearResultsButtom() {
+    return FlatButton(
+      child: Text('Clear Results'),
+      onPressed: () {
+        _block.clearResults();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // final appState = Provider.of<AppState>(context);
@@ -151,7 +190,10 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
           _setMeanContainer(),
           _setStdContainer(),
           _testModelButtom(),
-          _performanceResults()
+          _stopTestButtom(),
+          _accResults(),
+          _durResults(),
+          _clearResultsButtom()
         ],
       ),
     );

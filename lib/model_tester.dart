@@ -19,7 +19,7 @@ class DataBuilder {
     print(_perStatus.toString());
     // get a list of all the folders in the "numbers" directory
     List<FileSystemEntity> catList = Directory(rootDir).listSync();
-
+    catList.shuffle();
     catList.asMap().forEach((i, catDir) {
       String catPath = catDir.path;
       String catName = basename(catPath);
@@ -56,6 +56,7 @@ class ModelPrepper {
 class ModelTester {
   StaticTestBloc bloc;
   ModelTester(this.bloc);
+  bool isTesting = false;
 
   Future<Map<String, String>> loadDataMap(
       {String folderName, int numPerClass}) async {
@@ -70,13 +71,23 @@ class ModelTester {
       double imgMean,
       Stream<List<PerformanceData>> resultsStream,
       }) async {
+    isTesting = true;
     int countTrue = 0;
     int countFalse = 0;
     int oneIfTrue = 0;
+    
     print('#################### mean:$imgMean ###########################');
     print("#################### getting to the testing ##################");
 
     for (String imgPath in dataMap.keys) {
+
+      if(!isTesting){
+        print('$isTesting');
+        break;
+      }
+
+      int startTime = DateTime.now().millisecondsSinceEpoch;
+
       String trueLabel = dataMap[imgPath];
       var recognitions = await Tflite.runModelOnImage(
           path: imgPath, // required
@@ -86,6 +97,9 @@ class ModelTester {
           threshold: 0.2, // defaults to 0.1
           asynch: true // defaults to true
           );
+
+      int duration = DateTime.now().millisecondsSinceEpoch-startTime;
+      bloc.addRecognitionDuration(duration);
 
       if (recognitions.length > 0) {
         String result = recognitions[0]['label'];
@@ -98,28 +112,20 @@ class ModelTester {
         }
 
         bloc.addInt(oneIfTrue);
-
-        // bloc.addPerformaceSnapshot(
-        //   [PerformanceData(
-        //     countFalse: countFalse,
-        //     coutTrue: countTrue,
-        //     recognitionTime: 20,
-        //     result: '20'
-        //   )]
-        // );
         
       }
 
       print('accuracy = ${countTrue / (countTrue + countFalse)}');
       // break;
     }
+    isTesting = false;
   }
 
   
 
   startTestBatch(ModelData testSetup, StaticTestBloc _block) async {
     Map<String, String> dataMap =
-        await loadDataMap(folderName: testSetup.dataPath, numPerClass: 1);
+        await loadDataMap(folderName: testSetup.dataPath, numPerClass: 3);
 
     await ModelPrepper.prepModel(
         model: testSetup.model, labels: testSetup.labels);
