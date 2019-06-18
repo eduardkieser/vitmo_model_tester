@@ -3,9 +3,12 @@ import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/model_tester.dart';
 import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
 import 'package:provider/provider.dart';
+import 'package:vitmo_model_tester/screens/LiveTestScreen.dart';
+import 'package:camera/camera.dart';
 
 class StaticTestScreen extends StatefulWidget {
-
+  // CameraDescription firstCamera;
+  // StaticTestScreen(this.firstCamera);
   _StaticTestScreenState createState() => _StaticTestScreenState();
 }
 
@@ -178,6 +181,22 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
     );
   }
 
+  Widget _liveTestButton() {
+    return FlatButton(
+      child: Text('Live Test'),
+      onPressed: () {
+        ModelData model = models[_modelIndex];
+        model.imgStd = _selectedStd;
+        model.imgMean = _selectedMean;
+        ModelPrepper.prepModel(model:model.model,labels: model.labels);
+        Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => LiveTestScreen()),
+  );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // final appState = Provider.of<AppState>(context);
@@ -193,7 +212,8 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
           _stopTestButtom(),
           _accResults(),
           _durResults(),
-          _clearResultsButtom()
+          _clearResultsButtom(),
+          _liveTestButton(),
         ],
       ),
     );

@@ -27,6 +27,8 @@ dependencies:
   path_provider: ^0.5.0+1
   simple_permissions: ^0.1.9
   provider: ^2.0.1
+  camera: ^0.5.2+1
+  image: ^2.0.7
 
 dev_dependencies:
   flutter_test:
@@ -51,3 +53,4 @@ flutter:
    - assets/converted_model.tflite
    - assets/converted_model_02.tflite
    - assets/converted_model_03.tflite
+   - assets/36_gray_scale.tflite
