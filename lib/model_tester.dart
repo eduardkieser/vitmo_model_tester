@@ -121,8 +121,6 @@ class ModelTester {
     isTesting = false;
   }
 
-  
-
   startTestBatch(ModelData testSetup, StaticTestBloc _block) async {
     Map<String, String> dataMap =
         await loadDataMap(folderName: testSetup.dataPath, numPerClass: 3);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'screens/StaticTestScreen.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 
 import 'dart:io';
 import 'dart:async';
@@ -26,6 +27,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
     return MaterialApp(
       title: 'ONR Benchmarker',
       theme: ThemeData(

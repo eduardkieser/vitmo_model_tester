@@ -53,4 +53,4 @@ flutter:
    - assets/converted_model.tflite
    - assets/converted_model_02.tflite
    - assets/converted_model_03.tflite
-   - assets/36_gray_scale.tflite
+  #  - assets/36_gray_scale.tflite

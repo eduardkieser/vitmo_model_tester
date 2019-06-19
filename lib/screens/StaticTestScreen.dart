@@ -5,6 +5,7 @@ import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
 import 'package:provider/provider.dart';
 import 'package:vitmo_model_tester/screens/LiveTestScreen.dart';
 import 'package:camera/camera.dart';
+import 'package:vitmo_model_tester/blocks/LiveTestBlock.dart';
 
 class StaticTestScreen extends StatefulWidget {
   // CameraDescription firstCamera;
@@ -23,27 +24,31 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
   }
 
   int _modelIndex = 2;
-  double _selectedMean = 125;
-  double _selectedStd = 48;
+  double _selectedMean = 1;
+  double _selectedStd = 20;
   
   List<ModelData> models = [
     ModelData(
         model: "assets/optimized_graph.tflite",
         labels: "assets/retrained_labels.txt",
-        dataPath: 'VitmoModelTester/numbers_224x224'),
+        dataPath: 'VitmoModelTester/numbers_224x224',
+        imgSize:224),
+        
     ModelData(
         model: "assets/converted_model.tflite",
         labels: "assets/retrained_labels.txt",
-        dataPath: 'VitmoModelTester/numbers'),
+        dataPath: 'VitmoModelTester/numbers',
+        imgSize:224),
     ModelData(
         model: "assets/converted_model_02.tflite",
         labels: "assets/retrained_labels.txt",
-        dataPath: 'VitmoModelTester/numbers'),
+        dataPath: 'VitmoModelTester/numbers',
+        imgSize:128),
     ModelData(
         model: 'assets/converted_model_03.tflite',
         labels: "assets/retrained_labels.txt",
-        dataPath: 'VitmoModelTester/numbers'
-    )
+        dataPath: 'VitmoModelTester/numbers',
+        imgSize:128)
   ];
 
   Widget _modelSelector() {
@@ -189,9 +194,12 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
         model.imgStd = _selectedStd;
         model.imgMean = _selectedMean;
         ModelPrepper.prepModel(model:model.model,labels: model.labels);
+        LiveTestBlock _liveBloc = LiveTestBlock(model);
+        //Instantiate live block
+        //Switch route and pass live block to live screen
         Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => LiveTestScreen()),
+    MaterialPageRoute(builder: (context) => LiveTestScreen(bloc:_liveBloc)),
   );
       },
     );

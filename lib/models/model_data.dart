@@ -7,7 +7,8 @@ class ModelData{
   String dataPath;
   double imgMean;
   double imgStd;
-  ModelData({this.model, this.labels, this.dataPath, this.imgMean, this.imgStd});
+  int imgSize;
+  ModelData({this.model, this.labels, this.dataPath, this.imgMean, this.imgStd, this.imgSize});
 }
 
 class PerformanceData{

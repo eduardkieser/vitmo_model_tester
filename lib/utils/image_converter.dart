@@ -1,10 +1,12 @@
 import 'package:image/image.dart' as imglib;
+import 'package:camera/camera.dart';
+import 'dart:ui';
 
 
 class ImageConverter{
 
 
-  static Future<Image> convertYUV420toImage(CameraImage image) async {
+  static Future<List<int>> convertYUV420toImage(CameraImage image) async {
 
       try {
         final int width = image.width;
@@ -28,7 +30,8 @@ class ImageConverter{
         imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
         List<int> png = pngEncoder.encodeImage(img);
         // muteYUVProcessing = false;
-        return Image.memory(png);  
+        return png;
+        // return Image.memory(png);  
       } catch (e) {
         print(">>>>>>>>>>>> ERROR:" + e.toString());
       }
