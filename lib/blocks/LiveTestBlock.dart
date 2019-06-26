@@ -58,7 +58,7 @@ class LiveTestBlock {
   Future <void> startImageStream()async{
     cameraController.startImageStream((CameraImage availableYUV)async{
       if (!_isDoneConvertingImage) return;
-      print(_isDoneConvertingImage);
+      // print(_isDoneConvertingImage);
       _isDoneConvertingImage = false;
       if (false){
         List<int> imIntList = await compute(ImageConverter.convertYUV420toImage,availableYUV);

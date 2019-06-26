@@ -38,4 +38,15 @@ class ImageConverter{
       return null;
   }
 
+  static Future<CameraImage> cropCameraFrame(CameraImage image){
+
+    final int width = image.width;
+    final int height = image.height;
+    final Offset topLeft = Offset(.25*width.floor(),.25*height.floor());
+    final Offset bottomRight = Offset(.25*width.floor(),.25*height.floor());
+
+    
+
+  }
+
 }
