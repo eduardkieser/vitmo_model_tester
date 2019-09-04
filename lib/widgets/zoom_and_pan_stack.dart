@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'dart:io';
 import 'package:camera/camera.dart';
 import './../widgets/roi_frame.dart';
 import './../blocks/MultiFrameBlock.dart';
@@ -8,7 +7,7 @@ import './../models/roi_frame_model.dart';
 
 class ZoomAndPanStack extends StatefulWidget {
   
-  MultiFrameBlock bloc;
+  final MultiFrameBlock bloc;
   ZoomAndPanStack({this.bloc}) : super();
   createState() {
     return _ZoomAndPanStackState(bloc);

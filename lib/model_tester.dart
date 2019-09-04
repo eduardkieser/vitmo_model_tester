@@ -3,7 +3,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:tflite/tflite.dart';
-import 'package:simple_permissions/simple_permissions.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'models/model_data.dart';
 import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
 
@@ -14,10 +14,14 @@ class DataBuilder {
     Map<String, String> dataMap = Map();
     String rootDir = await getRootFolder(folderName);
 
-    PermissionStatus _perStatus = await SimplePermissions.requestPermission(
-        Permission.ReadExternalStorage);
-    print(_perStatus.toString());
+    // PermissionStatus   = await SimplePermissions.requestPermission(
+    //     Permission.ReadExternalStorage);
+    // print(_perStatus.toString());
     // get a list of all the folders in the "numbers" directory
+
+    Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+    print(permissions.toString());
+
     List<FileSystemEntity> catList = Directory(rootDir).listSync();
     catList.shuffle();
     catList.asMap().forEach((i, catDir) {

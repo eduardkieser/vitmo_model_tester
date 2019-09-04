@@ -7,6 +7,45 @@ import 'package:vitmo_model_tester/models/roi_frame_model.dart';
 
 class ImageConverter{
 
+  static Future<List<imglib.Image>> convertCopyRotateSetFast(Map<String,dynamic> convertCropData)async{
+    CameraImage cameraImage = convertCropData['image'];
+    final int width = cameraImage.width;
+    final int height = cameraImage.height;
+    var img = imglib.Image(width, height);
+    try {
+      Plane plane = cameraImage.planes[0];
+      const int shift = (0xFF << 24);
+      for (int x = 0; x < width; x++) {
+        for (int planeOffset = 0; planeOffset < height * width; planeOffset += width) {
+          final pixelColor = plane.bytes[planeOffset + x];
+          var newVal =
+              shift | (pixelColor << 16) | (pixelColor << 8) | pixelColor;
+          img.data[planeOffset + x] = newVal;
+        }
+      }
+      // good so far
+    } catch (e) {
+      print(">>>>>>>>>>>> ERROR:" + e.toString());
+      return null;
+    }
+    Map<String,dynamic> cropData = convertCropData['cropData']; 
+    List<imglib.Image> images = [];
+          List<num> screenSize = cropData['screenSize'];
+          imglib.Image image = img;
+          image = imglib.copyRotate(image, 90);
+          cropData['frames'].forEach((RoiFrameModel frame){
+            int x0 = (frame.firstCorner.dx/screenSize[0] * image.width).round();
+            int y0 = (frame.firstCorner.dy/screenSize[1] * image.height).round();
+            int x1 = (frame.secondCorner.dx/screenSize[0] * image.width).round();
+            int y1 = (frame.secondCorner.dy/screenSize[1] * image.height).round();
+            imglib.Image imageOut = imglib.copyCrop(image, x0, y0, (x1-x0), (y1-y0));
+            imageOut = imglib.copyResize(imageOut, width:48, height:48);
+            images.add(imageOut);
+          });
+          return images;
+
+  }
+
   static Future<imglib.Image> convertYUV420toImageFast(
       CameraImage image) async {
     try {

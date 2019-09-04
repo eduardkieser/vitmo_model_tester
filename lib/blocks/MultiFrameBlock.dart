@@ -4,15 +4,10 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
-import 'package:vitmo_model_tester/model_tester.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
-import 'package:vitmo_model_tester/utils/image_reader_stat.dart' as stat;
-import 'package:flutter/scheduler.dart';
 import 'package:image/image.dart' as imglib;
-import 'package:tflite/tflite.dart';
-import 'package:vitmo_model_tester/models/roi_frame_model.dart';
 
 class MultiFrameBlock {
   MultiFrameBlock(this.model) {
@@ -21,10 +16,7 @@ class MultiFrameBlock {
   ModelData model;
   ImageReader _reader;
   imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
-  List<RoiFrameModel> frames = [
-    RoiFrameModel(firstCorner: Offset(50.0, 50.0)),
-    RoiFrameModel(firstCorner: Offset(50.0, 50.0))
-  ];
+  List<RoiFrameModel> frames = [];
   int _selectedFrameIndex;
   double zoomScale = 1.0;
   double previousZoomScale = 1.0;
@@ -38,7 +30,7 @@ class MultiFrameBlock {
       StreamController.broadcast();
   StreamController<Uint8List> convertedImageStreamController =
       StreamController(); //
-  StreamController<List<String>> resultStreamController = StreamController();
+  StreamController<Map<String,List>> resultStreamController = StreamController();
   StreamController<MultiFrameBlock> frameController =
       StreamController.broadcast();
 
@@ -182,13 +174,14 @@ class MultiFrameBlock {
   num frameWidth = 100;
   num frameHeight = 100;
   bool _isDoneConvertingImage = true;
-  int _frameNumber = 0;
 
   void addListeners(){
     resultStreamController.stream.listen((results){
       print(results);
-      for (int i=0;i<results.length;i++){
-        frames[i].currentValue = results[i];
+      for (int i=0;i<results['result'].length;i++){
+        frames[i].currentValue = results['result'][i];
+        num n = results['confidence'][i];
+        frames[i].certainty = num.parse(n.toStringAsFixed(2));
       }
       frameController.sink.add(this);
     });
@@ -198,33 +191,32 @@ class MultiFrameBlock {
     cameraController.startImageStream((CameraImage availableYUV) async {
       // print('streaming');
       if (!_isDoneConvertingImage) return;
-
       _isDoneConvertingImage = false;
-      // print('converting');
-      imglib.Image image = await compute(ImageConverter.convertYUV420toImageFast, availableYUV);
       Map<String, dynamic> cropData = {
-        'image': image,
         'frames': frames,
         'screenSize': [frameWidth, frameHeight]
       };
-      // print('cropping');
-      List<imglib.Image> croppedImages = await compute(ImageConverter.cropRotateSet, cropData);
-      // List<int> imgForDisplay = await compute(ImageConverter.encodePng, croppedImage);
+      Map<String,dynamic> convertCropData = {'image':availableYUV,'cropData':cropData};
+      List<imglib.Image> croppedImages = await compute(ImageConverter.convertCopyRotateSetFast, convertCropData);
       List<String> results = List(croppedImages.length);
+      List<double> confidences = List(croppedImages.length);
       for (int ix=0; ix<croppedImages.length;ix++){
         var result = await _reader.readImageFromBinary(croppedImages[ix]);
         int p0 = int.parse(result[0]['label']);
         int p1 = int.parse(result[1]['label']);
         int p2 = int.parse(result[2]['label']);
+
+        double confidence = 
+        result[0]['confidence']*result[1]['confidence']*result[2]['confidence'];
+
         int intRes = p0 + p1 + p2;
         String res = intRes.toString();
         results[ix]=res;
+        confidences[ix]=confidence;
       }
       // convertedImageStreamController.sink.add(imgForDisplay);
-      resultStreamController.sink.add(results);
-      // print(results);
-
-      // print('converted image ${_frameNumber += 1}');
+      resultStreamController.sink.add( {'result':results,'confidence':confidences} );
+      // confidenceStreamController.sink.add(confidences.toString());
       _isDoneConvertingImage = true;
     });
   }
