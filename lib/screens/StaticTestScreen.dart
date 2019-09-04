@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/model_tester.dart';
 import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
@@ -6,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:vitmo_model_tester/screens/LiveTestScreen.dart';
 import 'package:camera/camera.dart';
 import 'package:vitmo_model_tester/blocks/LiveTestBlock.dart';
+import 'package:vitmo_model_tester/screens/MultiFrameScreen.dart';
 
 class StaticTestScreen extends StatefulWidget {
   // CameraDescription firstCamera;
@@ -24,31 +26,46 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
   }
 
   int _modelIndex = 2;
-  double _selectedMean = 1;
+  double _selectedMean = 20;
   double _selectedStd = 20;
   
   List<ModelData> models = [
-    ModelData(
-        model: "assets/optimized_graph.tflite",
-        labels: "assets/retrained_labels.txt",
-        dataPath: 'VitmoModelTester/numbers_224x224',
-        imgSize:224),
+    // ModelData(
+    //     model: "assets/optimized_graph.tflite",
+    //     labels: "assets/retrained_labels.txt",
+    //     dataPath: 'VitmoModelTester/numbers_224x224',
+    //     imgSize:224),
         
+    // ModelData(
+    //     model: "assets/converted_model.tflite",
+    //     labels: "assets/retrained_labels.txt",
+    //     dataPath: 'VitmoModelTester/numbers',
+    //     imgSize:224),
+    // ModelData(
+    //     model: "assets/converted_model_02.tflite",
+    //     labels: "assets/retrained_labels.txt",
+    //     dataPath: 'VitmoModelTester/numbers',
+    //     imgSize:128),
+    // ModelData(
+    //     model: 'assets/converted_model_03.tflite',
+    //     labels: "assets/retrained_labels.txt",
+    //     dataPath: 'VitmoModelTester/numbers',
+    //     imgSize:128),
     ModelData(
-        model: "assets/converted_model.tflite",
-        labels: "assets/retrained_labels.txt",
+        model: 'assets/dragon_mini_16_48_86.tflite',
+        labels: "assets/dragon_labels_33.txt",
         dataPath: 'VitmoModelTester/numbers',
-        imgSize:224),
+        imgSize:48),
     ModelData(
-        model: "assets/converted_model_02.tflite",
-        labels: "assets/retrained_labels.txt",
+        model: 'assets/dragon_mini_32_48_95.tflite',
+        labels: "assets/dragon_labels_33.txt",
         dataPath: 'VitmoModelTester/numbers',
-        imgSize:128),
+        imgSize:48),
     ModelData(
-        model: 'assets/converted_model_03.tflite',
-        labels: "assets/retrained_labels.txt",
+        model: 'assets/dragon_mini_32_48_97.tflite',
+        labels: "assets/dragon_labels_33.txt",
         dataPath: 'VitmoModelTester/numbers',
-        imgSize:128)
+        imgSize:48),
   ];
 
   Widget _modelSelector() {
@@ -205,6 +222,25 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
     );
   }
 
+    Widget _multiFrameButton() {
+    return FlatButton(
+      child: Text('MultiFrame'),
+      onPressed: () {
+        ModelData model = models[_modelIndex];
+        model.imgStd = _selectedStd;
+        model.imgMean = _selectedMean;
+        ModelPrepper.prepModel(model:model.model,labels: model.labels);
+        MultiFrameBlock _multiFrameBloc = MultiFrameBlock(model);
+        //Instantiate live block
+        //Switch route and pass live block to live screen
+        Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => MultiFrameScreen(bloc:_multiFrameBloc)),
+  );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // final appState = Provider.of<AppState>(context);
@@ -222,6 +258,7 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
           _durResults(),
           _clearResultsButtom(),
           _liveTestButton(),
+          _multiFrameButton(),
         ],
       ),
     );

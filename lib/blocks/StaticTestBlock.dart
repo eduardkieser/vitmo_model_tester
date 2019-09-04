@@ -9,13 +9,13 @@ class StaticTestBloc{
   List<int> _binaryResults = [];
   List<int> _durationResutls = [];
 
-  final StreamController<double> _intStreamController = StreamController<double>();
+  final StreamController<double> _intStreamController = StreamController<double>.broadcast();
 
-  Stream<double> get intStream => _intStreamController.stream;
+  Stream<double> get intStream => _intStreamController.stream.asBroadcastStream();
 
-  final StreamController<double> _durationStreamController = StreamController<double>();
+  final StreamController<double> _durationStreamController = StreamController<double>.broadcast();
 
-  Stream<double> get durationStream => _durationStreamController.stream;
+  Stream<double> get durationStream => _durationStreamController.stream.asBroadcastStream();
 
   // final _resultsStreamController = StreamController<StaticPerformanceState>();
 

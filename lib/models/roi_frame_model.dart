@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
+class RoiFrameModel{
+  double startingFrameWidth=80.0;
+  double startingFrameHeight=80.0;
+  double tagWidth = 30.0;
+  double tagHeight = 30.0;
+  Offset firstCorner = Offset(0,0);
+  Offset secondCorner = Offset(100,100);
 
-class RoiFrame{
+  int recognisedLabel = 0;
+  double certainty = 0;
 
-  Offset p1;
-  Offset p2;
+  String currentValue = 'nan';
 
-  RoiFrame({this.p1, this.p2});
-
-  RoiFrame.fromDefault(){
-    p1 = Offset(0, 0.25);
-    p2 = Offset(1, 0.75);
+  RoiFrameModel({this.firstCorner}){
+    secondCorner = firstCorner+Offset(startingFrameWidth, startingFrameHeight);
   }
 }

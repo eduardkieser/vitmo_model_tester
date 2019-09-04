@@ -93,7 +93,7 @@ class ModelTester {
           path: imgPath, // required
           imageMean: imgMean, // defaults to 117.0
           imageStd: imgStd, // defaults to 1.0
-          numResults: 1, // defaults to 5
+          numResults: 3, // defaults to 5
           threshold: 0.2, // defaults to 0.1
           asynch: true // defaults to true
           );
@@ -101,8 +101,18 @@ class ModelTester {
       int duration = DateTime.now().millisecondsSinceEpoch-startTime;
       bloc.addRecognitionDuration(duration);
 
+      if (recognitions.length != 3){
+        print('model returned weird length');
+        return;
+      }
+
       if (recognitions.length > 0) {
-        String result = recognitions[0]['label'];
+        int p0 = int.parse(recognitions[0]['label']);
+        int p1 = int.parse(recognitions[1]['label']);
+        int p2 = int.parse(recognitions[2]['label']);
+        int intRes = p0+p1+p2;
+        String result = intRes.toString();
+        // String result = recognitions[0]['label'];
         if (result == trueLabel) {
           countTrue++;
           oneIfTrue = 1;
