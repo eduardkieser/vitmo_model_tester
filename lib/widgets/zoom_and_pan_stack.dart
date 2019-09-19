@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import './../widgets/roi_frame.dart';
 import './../blocks/MultiFrameBlock.dart';
 import './../models/roi_frame_model.dart';
+import 'package:vitmo_model_tester/widgets/add_new_roi.dart';
 
 class ZoomAndPanStack extends StatefulWidget {
   
@@ -120,6 +121,19 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
         });
   }
 
+  Widget _buildAddNewFrameWidget(){
+    return StreamBuilder(
+      stream: bloc.isAddingNewFrameStreamController.stream,
+      initialData: false,
+      builder: (context, snapshot){
+        if (snapshot.data){
+          return AddNewFrame(bloc:bloc);
+        }else{
+          return Center();
+        }
+      },
+    );
+  }
 
   Widget _buildStackWidget(MultiFrameBlock bloc) {
     List<Widget> roiFrames = _buildRoiFrames(bloc);
@@ -130,6 +144,7 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
         Stack(
           children: roiFrames,
         ),
+        _buildAddNewFrameWidget()
       ],
     );
   }
@@ -144,11 +159,11 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     );
   }
 
-  void _addNewFrameToModel(MultiFrameBlock bloc) {
-    setState(() {
-      bloc.addNewFrame();
-    });
-  }
+  // void _addNewFrameToModel(MultiFrameBlock bloc) {
+  //   setState(() {
+  //     bloc.addNewFrame();
+  //   });
+  // }
 
   // void _clearFrames(MultiFrameBlock bloc) {
   //   setState(() {

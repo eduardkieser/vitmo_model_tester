@@ -1,7 +1,6 @@
 import 'package:image/image.dart' as imglib;
 import 'package:camera/camera.dart';
 import 'dart:ui';
-
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
 
 

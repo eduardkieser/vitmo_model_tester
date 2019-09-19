@@ -1,13 +1,50 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
-
+import 'package:image/image.dart' as imglib;
 import '../models/roi_frame_model.dart';
 
 class RoiFrame extends StatelessWidget {
   final MultiFrameBlock bloc;
   final int frameIndex;
   RoiFrame({this.bloc, this.frameIndex});
+
+  List<int> latestImage;
+
+  Color tagColor;
+
+  void getLatestImage(){
+    if (!bloc.showActualCroppedFrames){return;}
+    if (bloc.croppedImages == null){return;}
+    if (bloc.croppedImages.length<=frameIndex){return;}
+    
+    try{
+      imglib.Image img= bloc.croppedImages[frameIndex];
+        latestImage = bloc.pngEncoder.encodeImage(img);
+    }on Error{
+      print('something went wrong');
+    }
+  }
+
+  setTagColorFromCertainty(){
+    if (!bloc.isRecording){
+      tagColor = Colors.blue;
+      return;
+    }
+    num certainty = bloc.frames[frameIndex].certainty;
+    if (certainty>0.98){
+      tagColor = Colors.green;
+      return;
+    }
+    if (certainty>0.8){
+      tagColor = Colors.yellow;
+      return;
+    }else{
+      tagColor = Colors.red;
+      return;
+    }
+
+  }
 
   void moveFirstTag({DragUpdateDetails details}){
     bloc.moveFirstTag(details,frameIndex);
@@ -49,7 +86,8 @@ class RoiFrame extends StatelessWidget {
           moveFirstTag(details:details);
         },
         child: Container(
-          color: Colors.blue,
+          color: tagColor,
+          child: Center(child: Text(frameData.label),),
         ),
       ),
     );
@@ -78,9 +116,9 @@ class RoiFrame extends StatelessWidget {
           moveSecondTag(details:details);
         },
         child: Container(
-          color: Colors.blue,
+          color: tagColor,
           child:
-              Center(child: Text(bloc.frames[frameIndex].recognisedLabel.toString())),
+              Center(child: Text(bloc.frames[frameIndex].currentValue)),
         ),
       ),
     );
@@ -114,12 +152,19 @@ class RoiFrame extends StatelessWidget {
                 Container(color: bloc.selectedFrameIndex==this.frameIndex?
                   Colors.white.withAlpha(100):
                   Colors.white.withAlpha(50)),
-                  Center(child:Text("label: ${bloc.frames[frameIndex].currentValue} \n cartainty:${bloc.frames[frameIndex].certainty.toStringAsFixed(2)}"))
+                  latestImage==null? Container():
+                  Container(
+                    alignment: Alignment.bottomLeft,
+                    child: Image.memory(latestImage,width: _width,height: _height,alignment: Alignment.bottomLeft,)
+                    ),
+                  
+                  Center(child:Text("label: ${bloc.frames[frameIndex].currentValue} \n cartainty:${bloc.frames[frameIndex].certainty.toStringAsFixed(2)}")),
               ])),
     );
   }
 
   Widget _buildFrame(MultiFrameBlock bloc) {
+    getLatestImage();
     return Stack(children: <Widget>[
       _buildBorder(bloc),
       _buildFirstTag(bloc),
@@ -129,6 +174,7 @@ class RoiFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    setTagColorFromCertainty();
     return _buildFrame(bloc);
     //
   }

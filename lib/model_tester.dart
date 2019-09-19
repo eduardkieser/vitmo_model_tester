@@ -6,6 +6,8 @@ import 'package:tflite/tflite.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'models/model_data.dart';
 import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
+import 'package:image/image.dart' as imglib;
+import 'package:stats/stats.dart';
 
 class DataBuilder {
 
@@ -23,7 +25,7 @@ class DataBuilder {
     print(permissions.toString());
 
     List<FileSystemEntity> catList = Directory(rootDir).listSync();
-    catList.shuffle();
+    // catList.shuffle();
     catList.asMap().forEach((i, catDir) {
       String catPath = catDir.path;
       String catName = basename(catPath);
@@ -99,15 +101,20 @@ class ModelTester {
           imageStd: imgStd, // defaults to 1.0
           numResults: 3, // defaults to 5
           threshold: 0.2, // defaults to 0.1
-          asynch: true // defaults to true
+          asynch: false // defaults to true
           );
+
+      List<int> png = File(imgPath).readAsBytesSync();
+      // imglib.Image image = imglib.decodeImage(File(imgPath).readAsBytesSync());
+
+      print(Stats.fromData(png).withPrecision(4));
 
       int duration = DateTime.now().millisecondsSinceEpoch-startTime;
       bloc.addRecognitionDuration(duration);
 
       if (recognitions.length != 3){
         print('model returned weird length');
-        return;
+        continue;
       }
 
       if (recognitions.length > 0) {
@@ -129,7 +136,7 @@ class ModelTester {
         
       }
 
-      print('accuracy = ${countTrue / (countTrue + countFalse)}');
+      // print('accuracy = ${countTrue / (countTrue + countFalse)}');
       // break;
     }
     isTesting = false;
