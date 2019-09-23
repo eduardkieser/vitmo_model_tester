@@ -14,6 +14,7 @@ import 'package:image/image.dart' as imglib;
 import 'dart:math';
 import 'package:vitmo_model_tester/data/Repository.dart';
 import 'package:vitmo_model_tester/screens/SignalsScreen.dart';
+import 'package:vitmo_model_tester/screens/TimeSeriesChartExample.dart';
 
 class MultiFrameBlock {
   MultiFrameBlock(this.model) {
@@ -22,7 +23,12 @@ class MultiFrameBlock {
   ModelData model;
   ImageReader _reader;
   imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
-  List<RoiFrameModel> frames = [RoiFrameModel(firstCorner: Offset(50.0, 50.0),label: 'demo')];
+  List<RoiFrameModel> frames = [
+    RoiFrameModel(firstCorner: Offset(50.0, 50.0),label: 'HR'),
+    RoiFrameModel(firstCorner: Offset(320.0, 50.0),label: 'ABP'),
+    RoiFrameModel(firstCorner: Offset(50.0, 300.0),label: 'RespR'),
+    RoiFrameModel(firstCorner: Offset(300.0, 300.0),label: 'Sp02'),
+    ];
   int _selectedFrameIndex;
   double zoomScale = 1.0;
   double previousZoomScale = 1.0;
@@ -150,6 +156,7 @@ class MultiFrameBlock {
 
   void addNewFrame() {
     String label = frameAddingWidgetCurrentLabel;
+    if (label == null){label = "X";}
     frames.add(RoiFrameModel(firstCorner: Offset(50.0, 50.0),label: label));
     _selectedFrameIndex = frames.length - 1;
     frameController.sink.add(this);

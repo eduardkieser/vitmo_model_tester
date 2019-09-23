@@ -27,6 +27,25 @@ class _TimeTraceState extends State<TimeTrace> {
     widget.bloc.stopRepositoryReader();
   }
 
+  buildLineChartWithTitle(List<VitmoEntry>entriesList, String title){
+    return Column(children: <Widget>[
+      Center(child:Text(title)),
+      Container(
+        height: 300,
+        child: EntriesLineChart.fromEntriesList(entriesList),)
+    ],);
+  }
+
+  buildListOfCharts(Map<String,List<VitmoEntry>> entriesMap){
+    List<Widget> chartsList = [];
+    entriesMap.forEach((k,v){
+      chartsList.add(
+        buildLineChartWithTitle(v, k)
+      );
+    });
+    return ListView(children: chartsList);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,9 +56,16 @@ class _TimeTraceState extends State<TimeTrace> {
         stream: widget.bloc.signalsUpdateStreamController.stream,
         builder: ((context, snapshot) {
           if (snapshot.data != null) {
-            return EntriesLineChart(
-              entriesMap: snapshot.data,
-            );
+
+            // get first element from Map
+            var entriesMap = snapshot.data;
+            List<VitmoEntry> entriesList = entriesMap[entriesMap.keys.cast().toList()[0]];
+
+            // return EntriesLineChart.fromEntriesList(entriesList);
+            // return EntriesLineChart.withSampleData();
+            // return buildLineChartWithTitle(entriesList, 'AwsomeTitle!');
+            return buildListOfCharts(entriesMap);
+
           } else {
             return Center(
               child: CircularProgressIndicator(),

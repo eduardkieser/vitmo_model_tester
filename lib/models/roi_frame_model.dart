@@ -8,7 +8,7 @@ class RoiFrameModel{
   Offset firstCorner = Offset(0,0);
   Offset secondCorner = Offset(100,100);
 
-  final String label;
+  String label = 'X';
   int recognisedLabel = 0;
   double certainty = 0;
   String currentValue = 'nan';

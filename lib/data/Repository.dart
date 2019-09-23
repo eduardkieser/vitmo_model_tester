@@ -41,31 +41,31 @@ class Repository {
     });
   }
 
-  Future<Map<String,VitmoSignal>> getParsedEntries()async{
-    print('reading entries');
-  List<Entry> entriesList = await getEntries();
-  print('len of entries: ${entriesList.length}');
-    Map<String,VitmoSignal> signalsMap = {};
-    entriesList.forEach((entry){
-      if (signalsMap.containsKey(entry.label)){
-        signalsMap[entry.label].values.add(entry.value);
-        signalsMap[entry.label].timeStamps.add(entry.timeStamp);
-        signalsMap[entry.label].certainty.add(entry.certainty);
-      }else{
-        signalsMap[entry.label] = VitmoSignal(
-          values: [entry.value],
-          certainty: [entry.certainty],
-          label: entry.label,
-          timeStamps: [entry.timeStamp]
-        );
-      }
-    });
-    if (signalsMap.length==0){
-      return null;
-    }else{
-      return signalsMap;
-      }
-  }
+  // Future<Map<String,VitmoSignal>> getParsedEntries()async{
+  //   print('reading entries');
+  // List<Entry> entriesList = await getEntries();
+  // print('len of entries: ${entriesList.length}');
+  //   Map<String,VitmoSignal> signalsMap = {};
+  //   entriesList.forEach((entry){
+  //     if (signalsMap.containsKey(entry.label)){
+  //       signalsMap[entry.label].values.add(entry.value);
+  //       signalsMap[entry.label].timeStamps.add(entry.timeStamp);
+  //       signalsMap[entry.label].certainty.add(entry.certainty);
+  //     }else{
+  //       signalsMap[entry.label] = VitmoSignal(
+  //         values: [entry.value],
+  //         certainty: [entry.certainty],
+  //         label: entry.label,
+  //         timeStamps: [entry.timeStamp]
+  //       );
+  //     }
+  //   });
+  //   if (signalsMap.length==0){
+  //     return null;
+  //   }else{
+  //     return signalsMap;
+  //     }
+  // }
 
   Future<void> purgeRepository()async{
     final Database db = await getDataBase();
@@ -85,14 +85,14 @@ Future<Map<String,List<VitmoEntry>>> getParsedEntriesList()async{
           label: entry.label,
           value: entry.value,
           certainty: entry.certainty,
-          timeStamp: entry.timeStamp
+          timeStamp: DateTime.fromMillisecondsSinceEpoch(entry.timeStamp)
         ));
       }else{
         signalsMap[entry.label] = [VitmoEntry(
           label: entry.label,
           value: entry.value,
           certainty: entry.certainty,
-          timeStamp: entry.timeStamp
+          timeStamp: DateTime.fromMillisecondsSinceEpoch(entry.timeStamp)
         )];
       }
     });
@@ -104,17 +104,17 @@ Future<Map<String,List<VitmoEntry>>> getParsedEntriesList()async{
   }
 }
 
-class VitmoSignal{
-  List<int> values;
-  List<int> timeStamps;
-  List<double> certainty;
-  String label;
-  VitmoSignal({this.values,this.label, this.certainty, this.timeStamps});
-}
+// class VitmoSignal{
+//   List<int> values;
+//   List<int> timeStamps;
+//   List<double> certainty;
+//   String label;
+//   VitmoSignal({this.values,this.label, this.certainty, this.timeStamps});
+// }
 
 class VitmoEntry{
   int value;
-  int timeStamp;
+  DateTime timeStamp;
   double certainty;
   String label;
   VitmoEntry({this.timeStamp,this.label,this.certainty,this.value});

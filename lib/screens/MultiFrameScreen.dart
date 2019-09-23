@@ -4,6 +4,8 @@ import 'package:vitmo_model_tester/widgets/zoom_and_pan_stack.dart';
 import 'package:fab_dialer/fab_dialer.dart';
 import 'package:vitmo_model_tester/screens/SignalsScreen.dart';
 import 'package:vitmo_model_tester/blocks/SignalsBloc.dart';
+import 'package:vitmo_model_tester/screens/TimeSeriesChartExample.dart';
+import 'package:vitmo_model_tester/widgets/time_series_chart.dart';
 
 class MultiFrameScreen extends StatefulWidget {
   final MultiFrameBlock bloc;
@@ -23,7 +25,10 @@ class _MultiFrameScreenState extends State<MultiFrameScreen> {
   showCharts(){
     Navigator.push(
     context,
+    // MaterialPageRoute(builder: (context) => EntriesLineChart.fromEntriesList(widget.bloc.) ),
     MaterialPageRoute(builder: (context) => TimeTrace(bloc:SignalsBloc())),
+    // MaterialPageRoute(builder: (context) => SimpleTimeSeriesChart.withSampleData()),
+
   );
   }
 
