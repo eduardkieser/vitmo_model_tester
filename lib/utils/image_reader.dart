@@ -29,7 +29,7 @@ class ImageReader {
     return recognitions;
   }
 
-  readImageFromBinary(imglib.Image image) async {
+  Future readImageFromBinary(imglib.Image image) async {
     Uint8List binaryData = imageToByteListFloat32(
         image, model.imgSize, model.imgMean, model.imgStd);
         var recognitions = await Tflite.runModelOnBinary(

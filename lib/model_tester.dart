@@ -71,6 +71,15 @@ class ModelTester {
     return dataMap;
   }
 
+  getImMeanStdFromFilePath(String filePath){
+    imglib.Image image = imglib.decodeImage(File(filePath).readAsBytesSync());
+    List<int> png = imglib.writePng(image);
+    var stats = Stats.fromData(png).withPrecision(4);
+    num std = stats.standardDeviation;
+    num mean = stats.mean;
+    return {'mean':mean,'std':std};
+  }
+
   testModelWithParams(
       {Map<String, String> dataMap,
       double imgStd,
@@ -92,6 +101,9 @@ class ModelTester {
         break;
       }
 
+      Map stats = getImMeanStdFromFilePath(imgPath);
+      print(stats);
+
       int startTime = DateTime.now().millisecondsSinceEpoch;
 
       String trueLabel = dataMap[imgPath];
@@ -104,10 +116,9 @@ class ModelTester {
           asynch: false // defaults to true
           );
 
-      List<int> png = File(imgPath).readAsBytesSync();
       // imglib.Image image = imglib.decodeImage(File(imgPath).readAsBytesSync());
 
-      print(Stats.fromData(png).withPrecision(4));
+
 
       int duration = DateTime.now().millisecondsSinceEpoch-startTime;
       bloc.addRecognitionDuration(duration);

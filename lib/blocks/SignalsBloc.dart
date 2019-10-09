@@ -9,7 +9,6 @@ class SignalsBloc{
 
   StreamController<Map<String,List<VitmoEntry>>> signalsUpdateStreamController = StreamController();
 
-
     startRepositoryReader()async {
     readerTimer = Timer.periodic(
       Duration(seconds: 1),
