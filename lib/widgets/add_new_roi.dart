@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 
-class AddNewFrame extends StatelessWidget {
+class AddNewFrame extends StatefulWidget {
   AddNewFrame({Key key, this.bloc}) : super(key: key);
 
   final MultiFrameBlock bloc;
 
+  @override
+  _AddNewFrameState createState() => _AddNewFrameState();
+}
+
+class _AddNewFrameState extends State<AddNewFrame> {
+
+  bool isMMM = false;
+
   Widget _buildDropDownLabelsList() {
-    List dropDownItems = <String>['HR', 'ABP', 'SpO2', 'Temp', 'RespRate']
+    List<String> labelOptions = ['HR', 'ABP', 'SpO2', 'Temp', 'RespRate'];
+    List dropDownItems = labelOptions
             .map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
@@ -17,14 +26,41 @@ class AddNewFrame extends StatelessWidget {
 
     return DropdownButton<String>(
         hint: Text('Please select label'),
-        value: bloc.frameAddingWidgetCurrentLabel,
+        value: widget.bloc.frameAddingWidgetCurrentLabel,
         onChanged: (String newValue) {
-          bloc.frameAddingWidgetCurrentLabel=newValue;
-          bloc.isAddingNewFrameStreamController.add(true);
+          widget.bloc.frameAddingWidgetCurrentLabel=newValue;
+          widget.bloc.isAddingNewFrameStreamController.add(true);
           // bloc.frameController.add(bloc);
           print('chose new value $newValue');
         },
         items: dropDownItems);
+  }
+
+  Widget _buildMmmVNormalSelector(){
+    return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              FlatButton(
+                color: isMMM?Colors.transparent:Colors.blue,
+                onPressed: () {
+                  setState(() {
+                    isMMM = false;
+                  });
+                },
+                child: Text('Normal Frame'),
+              ),
+              FlatButton(
+                color: isMMM?Colors.blue:Colors.transparent,
+                onPressed: () {
+                  setState(() {
+                    isMMM = true;
+                  });
+                },
+                child: Text('Min/Max (Mean)'),
+              ),
+            ],
+          );
   }
 
   @override
@@ -41,6 +77,7 @@ class AddNewFrame extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.all(50),
           children: <Widget>[
+          _buildMmmVNormalSelector(),
           _buildDropDownLabelsList(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -48,13 +85,13 @@ class AddNewFrame extends StatelessWidget {
             children: <Widget>[
               FlatButton(
                 onPressed: () {
-                  bloc.addNewFrame();
+                  widget.bloc.addNewFrame(isMMM);
                 },
                 child: Text('AddFrame'),
               ),
               FlatButton(
                 onPressed: () {
-                  bloc.toggleIsAdding();
+                  widget.bloc.toggleIsAdding();
                 },
                 child: Text('Cancel'),
               ),

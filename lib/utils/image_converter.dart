@@ -1,12 +1,13 @@
 import 'package:image/image.dart' as imglib;
 import 'package:camera/camera.dart';
+import 'package:path/path.dart';
 import 'dart:ui';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
 
 
 class ImageConverter{
 
-  static Future<List<imglib.Image>> convertCopyRotateSetFast(Map<String,dynamic> convertCropData)async{
+  static Future<List<List<imglib.Image>>> convertCopyRotateSetFast(Map<String,dynamic> convertCropData)async{
     CameraImage cameraImage = convertCropData['image'];
     final int width = cameraImage.width;
     final int height = cameraImage.height;
@@ -27,22 +28,55 @@ class ImageConverter{
       print(">>>>>>>>>>>> ERROR:" + e.toString());
       return null;
     }
+
+    if (convertCropData['invertColors']){
+      img = imglib.invert(img);
+    }
+
     Map<String,dynamic> cropData = convertCropData['cropData']; 
-    List<imglib.Image> images = [];
+    List<List<imglib.Image>> images = [];
           List<num> screenSize = cropData['screenSize'];
           imglib.Image image = img;
           image = imglib.copyRotate(image, 90);
           cropData['frames'].forEach((RoiFrameModel frame){
-            int x0 = (frame.firstCorner.dx/screenSize[0] * image.width).round();
-            int y0 = (frame.firstCorner.dy/screenSize[1] * image.height).round();
-            int x1 = (frame.secondCorner.dx/screenSize[0] * image.width).round();
-            int y1 = (frame.secondCorner.dy/screenSize[1] * image.height).round();
-            imglib.Image imageOut = imglib.copyCrop(image, x0, y0, (x1-x0), (y1-y0));
-            imageOut = imglib.copyResize(imageOut, width:48, height:48);
-            images.add(imageOut);
+            if (frame.isMMM){
+              double subFrameSizeFactor = 0.6;
+              double frameWidth = (frame.secondCorner.dx-frame.firstCorner.dx).abs();
+              double frameHeight = (frame.secondCorner.dy-frame.firstCorner.dy).abs();
+              /// Top left subframe(Usually Max)
+              int x0 = (frame.firstCorner.dx/screenSize[0] * image.width).round();
+              int y0 = (frame.firstCorner.dy/screenSize[1] * image.height).round();
+              int x1 = ((frame.firstCorner.dx+frameWidth*subFrameSizeFactor)/screenSize[0] * image.width).round();
+              int y1 = ((frame.firstCorner.dy+frameHeight*subFrameSizeFactor)/screenSize[1] * image.height).round();
+              imglib.Image imageOut1 = imglib.copyCrop(image, x0, y0, (x1-x0), (y1-y0));
+              imageOut1 = imglib.copyResize(imageOut1, width:48, height:48);
+              /// Top right subframe(Usually Min)
+              x0 = ((frame.secondCorner.dx-frameWidth*subFrameSizeFactor)/screenSize[0] * image.width).round();
+              y0 = (frame.firstCorner.dy/screenSize[1] * image.height).round();
+              x1 = (frame.secondCorner.dx/screenSize[0] * image.width).round();
+              y1 = ((frame.firstCorner.dy+frameHeight*subFrameSizeFactor)/screenSize[1] * image.height).round();
+              imglib.Image imageOut2 = imglib.copyCrop(image, x0, y0, (x1-x0), (y1-y0));
+              imageOut2 = imglib.copyResize(imageOut2, width:48, height:48);
+
+              /// Bottom Center, usually mean
+              x0 = ((frame.firstCorner.dx+(frameWidth/2)*(1-subFrameSizeFactor))/screenSize[0] * image.width).round();
+              y0 = ((frame.secondCorner.dy-frameHeight*subFrameSizeFactor)/screenSize[1] * image.height).round();
+              x1 = ((frame.firstCorner.dx+(frameWidth/2)*(1+subFrameSizeFactor))/screenSize[0] * image.width).round();
+              y1 = (frame.secondCorner.dy/screenSize[1] * image.height).round();
+              imglib.Image imageOut3 = imglib.copyCrop(image, x0, y0, (x1-x0), (y1-y0));
+              imageOut3 = imglib.copyResize(imageOut3, width:48, height:48);
+              images.add([imageOut1, imageOut2, imageOut3]);
+            }else{
+              int x0 = (frame.firstCorner.dx/screenSize[0] * image.width).round();
+              int y0 = (frame.firstCorner.dy/screenSize[1] * image.height).round();
+              int x1 = (frame.secondCorner.dx/screenSize[0] * image.width).round();
+              int y1 = (frame.secondCorner.dy/screenSize[1] * image.height).round();
+              imglib.Image imageOut = imglib.copyCrop(image, x0, y0, (x1-x0), (y1-y0));
+              imageOut = imglib.copyResize(imageOut, width:48, height:48);
+              images.add([imageOut]);
+            }
           });
           return images;
-
   }
 
   static Future<imglib.Image> convertYUV420toImageFast(

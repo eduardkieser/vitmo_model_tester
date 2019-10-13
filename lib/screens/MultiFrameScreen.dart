@@ -104,8 +104,31 @@ class _MultiFrameScreenState extends State<MultiFrameScreen> {
        Colors.blue,
        Colors.white,
       ),
+      FabMiniMenuItem.withText(
+       Icon(Icons.invert_colors),
+       bloc.invertColors?Colors.green: Colors.blue,
+       4.0,
+       "Invert Colors",
+       bloc.toggleInvertImageColors,
+       "invert colors",
+       Colors.blue,
+       Colors.white,
+      ),
     ];
-    return FabDialer(_fabMiniMenuItemList, Colors.blue, Icon(Icons.add), Icon(Icons.close), 250, true);
+    bool hideAfterSelect = false;
+    return FabDialer(_fabMiniMenuItemList, Colors.blue, Icon(Icons.add), Icon(Icons.close), 250, hideAfterSelect);
+  }
+
+  _buildFloatingMenueFromStream(bloc){
+    return StreamBuilder(
+      stream: bloc.frameController.stream,
+      initialData: bloc,
+      builder: (context, snapshot){
+        print('rebuilding');
+        print(bloc.invertColors);
+        return _buildFloatingMenu(bloc);
+      },
+    );
   }
 
   @override
@@ -116,7 +139,7 @@ class _MultiFrameScreenState extends State<MultiFrameScreen> {
     }
     return Scaffold(
       body: ZoomAndPanStack(bloc:widget.bloc),
-      floatingActionButton: _buildFloatingMenu(widget.bloc)
+      floatingActionButton: _buildFloatingMenueFromStream(widget.bloc)
     );
   }
 }

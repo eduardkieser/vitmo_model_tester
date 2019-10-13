@@ -10,10 +10,11 @@ class RoiFrameModel{
 
   String label = 'X';
   int recognisedLabel = 0;
-  double certainty = 0;
-  String currentValue = 'nan';
+  List<double> certainty = [0,0,0];
+  List<String> currentValue = ['nan'];
+  bool isMMM;
 
-  RoiFrameModel({this.firstCorner, this.label='X'}){
+  RoiFrameModel({this.firstCorner, this.label='X', this.isMMM=false}){
     secondCorner = firstCorner+Offset(startingFrameWidth, startingFrameHeight);
   }
 }

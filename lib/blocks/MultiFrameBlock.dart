@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import 'package:vitmo_model_tester/data/entry_model.dart';
 import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
+import 'package:vitmo_model_tester/screens/LiveTestScreen.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
@@ -27,7 +28,7 @@ class MultiFrameBlock {
     RoiFrameModel(firstCorner: Offset(50.0, 50.0),label: 'HR'),
     RoiFrameModel(firstCorner: Offset(320.0, 50.0),label: 'ABP'),
     RoiFrameModel(firstCorner: Offset(50.0, 300.0),label: 'RespR'),
-    RoiFrameModel(firstCorner: Offset(300.0, 300.0),label: 'Sp02'),
+    RoiFrameModel(firstCorner: Offset(300.0, 300.0),label: 'Sp02',isMMM: true),
     ];
   int _selectedFrameIndex;
   double zoomScale = 1.0;
@@ -40,6 +41,7 @@ class MultiFrameBlock {
   Random randomGenerator = Random();
   bool showActualCroppedFrames = false;
   bool isRecording = false;
+  bool invertColors = false;
 
   int capturePeriodInMilliSeconds = 1000;
   Timer captureTimer;
@@ -51,6 +53,7 @@ class MultiFrameBlock {
   StreamController<Uint8List> convertedImageStreamController =
       StreamController(); //
   StreamController<Map<String,List>> resultStreamController = StreamController();
+  StreamController<List<List<Map<String,dynamic>>>> structuredResultStreamController = StreamController();
   StreamController<MultiFrameBlock> frameController =
       StreamController.broadcast();
 
@@ -154,10 +157,10 @@ class MultiFrameBlock {
     frameController.sink.add(this);
   }
 
-  void addNewFrame() {
+  void addNewFrame(bool isMMM) {
     String label = frameAddingWidgetCurrentLabel;
     if (label == null){label = "X";}
-    frames.add(RoiFrameModel(firstCorner: Offset(50.0, 50.0),label: label));
+    frames.add(RoiFrameModel(firstCorner: Offset(50.0, 50.0),label: label,isMMM:isMMM));
     _selectedFrameIndex = frames.length - 1;
     frameController.sink.add(this);
     isAddingNewframe = false;
@@ -213,13 +216,32 @@ class MultiFrameBlock {
   void addListeners(){
     resultStreamController.stream.listen((results){
       // print(results);
-      for (int i=0;i<results['result'].length;i++){
-        frames[i].currentValue = results['result'][i];
-        num n = results['confidence'][i];
-        frames[i].certainty = num.parse(n.toStringAsFixed(2));
+      for (int frameIx=0; frameIx<results['result'].length; frameIx++){
+        num conf = results['confidence'][frameIx][0];
+        if (conf>0.5){
+          frames[frameIx].certainty = [num.parse(conf.toStringAsFixed(2))];
+          frames[frameIx].currentValue = results['result'][frameIx];
+        }
+        else{
+          frames[frameIx].currentValue = ['nan'];
+        }
       }
       frameController.sink.add(this);
     });
+    // structuredResultStreamController.stream.listen((results){
+    //   // print(results);
+    //   for (int frameIx=0; frameIx<results['result'].length; frameIx++){
+    //     num conf = results['confidence'][frameIx][0];
+    //     if (conf>0.5){
+    //       frames[frameIx].certainty = num.parse(conf.toStringAsFixed(2));
+    //       frames[frameIx].currentValue = results['result'][frameIx][0];
+    //     }
+    //     else{
+    //       frames[frameIx].currentValue = 'nan';
+    //     }
+    //   }
+    //   frameController.sink.add(this);
+    // });
   }
 
   Repository repository = Repository();
@@ -244,18 +266,48 @@ class MultiFrameBlock {
       print('adding frame');
       repository.insertEntry(Entry(
         // id: randomGenerator.nextInt(2^32),
-        value: frame.currentValue=='nan'?-1:int.parse(frame.currentValue),
-        certainty: frame.certainty,
+        value: frame.currentValue[0]=='nan'?-1:int.parse(frame.currentValue[0]),
+        certainty: frame.certainty[0],
         label: frame.label,
         timeStamp: DateTime.now().millisecondsSinceEpoch
       ));
     });
   }
 
-  List<imglib.Image> croppedImages;
+  List<List<imglib.Image>> croppedImages;
 
   Future<void> startImageStream() async {
     startCaptureTimer();
+
+    Future<Map<String,dynamic>> runReaderOnImage(int frameIx, imglib.Image croppedImage)async{
+        var result = await _reader.readImageFromBinary(croppedImage);
+        int p0 = int.parse(result[0]['label']);
+        int p1 = int.parse(result[1]['label']);
+        int p2 = int.parse(result[2]['label']);
+        double confidence = 
+        result[0]['confidence']*result[1]['confidence']*result[2]['confidence'];
+        int intRes = p0 + p1 + p2;
+        String res = intRes.toString();
+        if (intRes==300){
+          res = 'nan';
+        }
+        return {'confidence':confidence,'res':res};
+      }
+
+    Future<List<Map<String,dynamic>>> runReaderOnFrame(int frameIx, List<List<imglib.Image>> croppedImages)async{
+      if(frames[frameIx].isMMM){
+        return [
+          await runReaderOnImage(frameIx, croppedImages[frameIx][0]),
+          await runReaderOnImage(frameIx, croppedImages[frameIx][1]),
+          await runReaderOnImage(frameIx, croppedImages[frameIx][2])
+          ];
+      }else{
+        return [await runReaderOnImage(frameIx, croppedImages[frameIx][0])];
+      }
+
+      
+    }
+
     cameraController.startImageStream((CameraImage availableYUV) async {
       // print('streaming');
       if (!_isDoneConvertingImage) return;
@@ -264,25 +316,20 @@ class MultiFrameBlock {
         'frames': frames,
         'screenSize': [frameWidth, frameHeight]
       };
-      Map<String,dynamic> convertCropData = {'image':availableYUV,'cropData':cropData};
+      Map<String,dynamic> convertCropData = {'image':availableYUV,'cropData':cropData, 'invertColors':invertColors};
       croppedImages = await compute(ImageConverter.convertCopyRotateSetFast, convertCropData);
-      List<String> results = List(croppedImages.length);
-      List<double> confidences = List(croppedImages.length);
-      for (int ix=0; ix<croppedImages.length;ix++){
-        var result = await _reader.readImageFromBinary(croppedImages[ix]);
-        int p0 = int.parse(result[0]['label']);
-        int p1 = int.parse(result[1]['label']);
-        int p2 = int.parse(result[2]['label']);
-
-        double confidence = 
-        result[0]['confidence']*result[1]['confidence']*result[2]['confidence'];
-
-        int intRes = p0 + p1 + p2;
-        String res = intRes.toString();
-        results[ix]=res;
-        confidences[ix]=confidence;
+      List<List<String>> results = List(croppedImages.length);
+      List<List<double>> confidences = List(croppedImages.length);
+      List<List<Map<String,dynamic>>> structuredResutls = List(croppedImages.length);
+      for (int frameIx=0; frameIx<croppedImages.length;frameIx++){
+        List<Map<String,dynamic>> confResMap = await runReaderOnFrame(frameIx=frameIx, croppedImages=croppedImages);
+        results[frameIx] = [confResMap[0]['res']];
+        confidences[frameIx]=[confResMap[0]['confidence']];
+        structuredResutls[frameIx]=confResMap;
       }
       resultStreamController.sink.add( {'result':results,'confidence':confidences} );
+      structuredResultStreamController.sink.add( structuredResutls );
+
       _isDoneConvertingImage = true;
     });
     isRecording = true;
@@ -303,11 +350,17 @@ class MultiFrameBlock {
     showActualCroppedFrames = !showActualCroppedFrames;
   }
 
+  toggleInvertImageColors(){
+    invertColors = !invertColors;
+    frameController.sink.add(this);
+  }
+
   dispose() {
     cameraImageStreamController.close();
     cameraIsInitializedStreamController.close();
     convertedImageStreamController.close();
     resultStreamController.close();
+    structuredResultStreamController.close();
     frameController.close();
     isAddingNewFrameStreamController.close();
     captureController.close();
