@@ -11,6 +11,7 @@ class RoiFrame extends StatelessWidget {
 
   List<int> latestImage;
   Color tagColor;
+  List<Color> backgroundColors;
 
   void getLatestImage() {
     if (!bloc.showActualCroppedFrames) {
@@ -36,7 +37,7 @@ class RoiFrame extends StatelessWidget {
       tagColor = Colors.blue;
       return;
     }
-    num certainty = bloc.frames[frameIndex].certainty[0];
+    num certainty = bloc.frames[frameIndex].certainty.reduce(min);
     if (certainty > 0.98) {
       tagColor = Colors.green;
       return;
@@ -47,6 +48,30 @@ class RoiFrame extends StatelessWidget {
     } else {
       tagColor = Colors.red;
       return;
+    }
+  }
+
+  setBackgroundColorsFromCertainty() {
+    backgroundColors = [Colors.white, Colors.white, Colors.white];
+    List<num> certainties = bloc.frames[frameIndex].certainty;
+    if (certainties.length == 1) {
+      return;
+    }
+    if (!bloc.isRecording) {
+      return;
+    }
+    for (var i = 0; i < certainties.length; i++) {
+      if (certainties[i] > 0.98) {
+        backgroundColors[i] = Colors.green;
+        continue;
+      }
+      if (certainties[i] > 0.8) {
+        backgroundColors[i] = Colors.yellow;
+        continue;
+      } else {
+        backgroundColors[i] = Colors.red;
+        continue;
+      }
     }
   }
 
@@ -124,7 +149,8 @@ class RoiFrame extends StatelessWidget {
         },
         child: Container(
           color: tagColor,
-          child: Center(child: Text(bloc.frames[frameIndex].currentValue.toString())),
+          child: Center(
+              child: Text(bloc.frames[frameIndex].currentValue.toString())),
         ),
       ),
     );
@@ -142,11 +168,9 @@ class RoiFrame extends StatelessWidget {
         (frameData.firstCorner.dx - frameData.secondCorner.dx).abs();
 
     Widget _buildBorderBackground(MultiFrameBlock bloc) {
+      int alpha = bloc.selectedFrameIndex == this.frameIndex?100:50;
       RoiFrameModel frameData = bloc.frames[frameIndex];
       if (frameData.isMMM) {
-        Color color = bloc.selectedFrameIndex == this.frameIndex
-            ? Colors.white.withAlpha(100)
-            : Colors.white.withAlpha(50);
         Color borderColor = Colors.transparent;
         double sizeFactor = 0.6;
         return Stack(
@@ -154,12 +178,12 @@ class RoiFrame extends StatelessWidget {
             Positioned(
               top: 0,
               left: 0,
-              width: _width *sizeFactor,
-              height: _height *sizeFactor,
+              width: _width * sizeFactor,
+              height: _height * sizeFactor,
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: color,
+                      color: backgroundColors[0].withAlpha(alpha),
                       border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
@@ -168,12 +192,12 @@ class RoiFrame extends StatelessWidget {
             Positioned(
               top: 0,
               right: 0,
-              width: _width *sizeFactor,
-              height: _height *sizeFactor,
+              width: _width * sizeFactor,
+              height: _height * sizeFactor,
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: color,
+                      color: backgroundColors[1].withAlpha(alpha),
                       border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
@@ -181,13 +205,13 @@ class RoiFrame extends StatelessWidget {
             ),
             Positioned(
               bottom: 0,
-              left: (_width-_width*sizeFactor)/2,
-              width: _width *sizeFactor,
-              height: _height *sizeFactor,
+              left: (_width - _width * sizeFactor) / 2,
+              width: _width * sizeFactor,
+              height: _height * sizeFactor,
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: color,
+                      color: backgroundColors[2].withAlpha(alpha),
                       border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
@@ -248,6 +272,7 @@ class RoiFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     setTagColorFromCertainty();
+    setBackgroundColorsFromCertainty();
     return _buildFrame(bloc);
     //
   }

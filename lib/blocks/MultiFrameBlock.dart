@@ -25,11 +25,12 @@ class MultiFrameBlock {
   ImageReader _reader;
   imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
   List<RoiFrameModel> frames = [
-    RoiFrameModel(firstCorner: Offset(50.0, 50.0),label: 'HR'),
-    RoiFrameModel(firstCorner: Offset(320.0, 50.0),label: 'ABP'),
-    RoiFrameModel(firstCorner: Offset(50.0, 300.0),label: 'RespR'),
-    RoiFrameModel(firstCorner: Offset(300.0, 300.0),label: 'Sp02',isMMM: true),
-    ];
+    RoiFrameModel(firstCorner: Offset(50.0, 50.0), label: 'HR'),
+    RoiFrameModel(firstCorner: Offset(320.0, 50.0), label: 'ABP'),
+    RoiFrameModel(firstCorner: Offset(50.0, 300.0), label: 'RespR'),
+    RoiFrameModel(
+        firstCorner: Offset(300.0, 300.0), label: 'Sp02', isMMM: true),
+  ];
   int _selectedFrameIndex;
   double zoomScale = 1.0;
   double previousZoomScale = 1.0;
@@ -52,13 +53,14 @@ class MultiFrameBlock {
       StreamController.broadcast();
   StreamController<Uint8List> convertedImageStreamController =
       StreamController(); //
-  StreamController<Map<String,List>> resultStreamController = StreamController();
-  StreamController<List<List<Map<String,dynamic>>>> structuredResultStreamController = StreamController();
+  StreamController<Map<String, List>> resultStreamController =
+      StreamController();
+  StreamController<List<List<Map<String, dynamic>>>>
+      structuredResultStreamController = StreamController();
   StreamController<MultiFrameBlock> frameController =
       StreamController.broadcast();
 
-  StreamController<bool> isAddingNewFrameStreamController = 
-      StreamController();
+  StreamController<bool> isAddingNewFrameStreamController = StreamController();
 
   StreamController<Entry> captureController = StreamController();
 
@@ -159,8 +161,11 @@ class MultiFrameBlock {
 
   void addNewFrame(bool isMMM) {
     String label = frameAddingWidgetCurrentLabel;
-    if (label == null){label = "X";}
-    frames.add(RoiFrameModel(firstCorner: Offset(50.0, 50.0),label: label,isMMM:isMMM));
+    if (label == null) {
+      label = "X";
+    }
+    frames.add(RoiFrameModel(
+        firstCorner: Offset(50.0, 50.0), label: label, isMMM: isMMM));
     _selectedFrameIndex = frames.length - 1;
     frameController.sink.add(this);
     isAddingNewframe = false;
@@ -168,7 +173,7 @@ class MultiFrameBlock {
     frameAddingWidgetCurrentLabel = null;
   }
 
-  void toggleIsAdding(){
+  void toggleIsAdding() {
     isAddingNewframe = !isAddingNewframe;
     isAddingNewFrameStreamController.sink.add(isAddingNewframe);
   }
@@ -213,64 +218,78 @@ class MultiFrameBlock {
   num frameHeight = 100;
   bool _isDoneConvertingImage = true;
 
-  void addListeners(){
-    resultStreamController.stream.listen((results){
+  void addListeners() {
+    resultStreamController.stream.listen((results) {
       // print(results);
-      for (int frameIx=0; frameIx<results['result'].length; frameIx++){
+      for (int frameIx = 0; frameIx < results['result'].length; frameIx++) {
         num conf = results['confidence'][frameIx][0];
-        if (conf>0.5){
+        if (conf > 0.5) {
           frames[frameIx].certainty = [num.parse(conf.toStringAsFixed(2))];
           frames[frameIx].currentValue = results['result'][frameIx];
-        }
-        else{
+        } else {
           frames[frameIx].currentValue = ['nan'];
         }
       }
       frameController.sink.add(this);
     });
-    // structuredResultStreamController.stream.listen((results){
-    //   // print(results);
-    //   for (int frameIx=0; frameIx<results['result'].length; frameIx++){
-    //     num conf = results['confidence'][frameIx][0];
-    //     if (conf>0.5){
-    //       frames[frameIx].certainty = num.parse(conf.toStringAsFixed(2));
-    //       frames[frameIx].currentValue = results['result'][frameIx][0];
-    //     }
-    //     else{
-    //       frames[frameIx].currentValue = 'nan';
-    //     }
-    //   }
-    //   frameController.sink.add(this);
-    // });
+    structuredResultStreamController.stream.listen((results) {
+      print(results);
+      for (int frameIx = 0; frameIx < results.length; frameIx++) {
+        List currentFrameData = results[frameIx];
+        List frameCertainties = [];
+        List frameResutls = [];
+        for (Map confRes in currentFrameData) {
+          num conf = confRes['confidence'];
+          String res = confRes['restult'];
+          if (conf > 0.5) {
+            frameCertainties.add(num.parse(conf.toStringAsFixed(2)));
+            frameResutls.add(res);
+          } else {
+            frameCertainties.add(num.parse(conf.toStringAsFixed(2)));
+            frameResutls.add('nan');
+          }
+        }
+      }
+      //     num conf = results['confidence'][frameIx][0];
+      //     if (conf>0.5){
+      //       frames[frameIx].certainty = num.parse(conf.toStringAsFixed(2));
+      //       frames[frameIx].currentValue = results['result'][frameIx][0];
+      //     }
+      //     else{
+      //       frames[frameIx].currentValue = 'nan';
+      //     }
+      //   }
+      //   frameController.sink.add(this);
+    });
   }
 
   Repository repository = Repository();
 
-  startCaptureTimer(){
-    captureTimer = Timer.periodic(
-      Duration(seconds: 1),
-      (Timer t){storeSnapshotToDb();}
-    );
+  startCaptureTimer() {
+    captureTimer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      storeSnapshotToDb();
+    });
   }
 
-  stopCaptureTimer(){
+  stopCaptureTimer() {
     captureTimer.cancel();
   }
 
-  storeSnapshotToDb(){
+  storeSnapshotToDb() {
     print('calling store to db');
-    if (frames.length==0){
+    if (frames.length == 0) {
       return;
     }
-    frames.forEach((frame){
+    frames.forEach((frame) {
       print('adding frame');
       repository.insertEntry(Entry(
-        // id: randomGenerator.nextInt(2^32),
-        value: frame.currentValue[0]=='nan'?-1:int.parse(frame.currentValue[0]),
-        certainty: frame.certainty[0],
-        label: frame.label,
-        timeStamp: DateTime.now().millisecondsSinceEpoch
-      ));
+          // id: randomGenerator.nextInt(2^32),
+          value: frame.currentValue[0] == 'nan'
+              ? -1
+              : int.parse(frame.currentValue[0]),
+          certainty: frame.certainty[0],
+          label: frame.label,
+          timeStamp: DateTime.now().millisecondsSinceEpoch));
     });
   }
 
@@ -279,33 +298,34 @@ class MultiFrameBlock {
   Future<void> startImageStream() async {
     startCaptureTimer();
 
-    Future<Map<String,dynamic>> runReaderOnImage(int frameIx, imglib.Image croppedImage)async{
-        var result = await _reader.readImageFromBinary(croppedImage);
-        int p0 = int.parse(result[0]['label']);
-        int p1 = int.parse(result[1]['label']);
-        int p2 = int.parse(result[2]['label']);
-        double confidence = 
-        result[0]['confidence']*result[1]['confidence']*result[2]['confidence'];
-        int intRes = p0 + p1 + p2;
-        String res = intRes.toString();
-        if (intRes==300){
-          res = 'nan';
-        }
-        return {'confidence':confidence,'res':res};
+    Future<Map<String, dynamic>> runReaderOnImage(
+        int frameIx, imglib.Image croppedImage) async {
+      var result = await _reader.readImageFromBinary(croppedImage);
+      int p0 = int.parse(result[0]['label']);
+      int p1 = int.parse(result[1]['label']);
+      int p2 = int.parse(result[2]['label']);
+      double confidence = result[0]['confidence'] *
+          result[1]['confidence'] *
+          result[2]['confidence'];
+      int intRes = p0 + p1 + p2;
+      String res = intRes.toString();
+      if (intRes == 300) {
+        res = 'nan';
       }
+      return {'confidence': confidence, 'res': res};
+    }
 
-    Future<List<Map<String,dynamic>>> runReaderOnFrame(int frameIx, List<List<imglib.Image>> croppedImages)async{
-      if(frames[frameIx].isMMM){
+    Future<List<Map<String, dynamic>>> runReaderOnFrame(
+        int frameIx, List<List<imglib.Image>> croppedImages) async {
+      if (frames[frameIx].isMMM) {
         return [
           await runReaderOnImage(frameIx, croppedImages[frameIx][0]),
           await runReaderOnImage(frameIx, croppedImages[frameIx][1]),
           await runReaderOnImage(frameIx, croppedImages[frameIx][2])
-          ];
-      }else{
+        ];
+      } else {
         return [await runReaderOnImage(frameIx, croppedImages[frameIx][0])];
       }
-
-      
     }
 
     cameraController.startImageStream((CameraImage availableYUV) async {
@@ -316,26 +336,34 @@ class MultiFrameBlock {
         'frames': frames,
         'screenSize': [frameWidth, frameHeight]
       };
-      Map<String,dynamic> convertCropData = {'image':availableYUV,'cropData':cropData, 'invertColors':invertColors};
-      croppedImages = await compute(ImageConverter.convertCopyRotateSetFast, convertCropData);
+      Map<String, dynamic> convertCropData = {
+        'image': availableYUV,
+        'cropData': cropData,
+        'invertColors': invertColors
+      };
+      croppedImages = await compute(
+          ImageConverter.convertCopyRotateSetFast, convertCropData);
       List<List<String>> results = List(croppedImages.length);
       List<List<double>> confidences = List(croppedImages.length);
-      List<List<Map<String,dynamic>>> structuredResutls = List(croppedImages.length);
-      for (int frameIx=0; frameIx<croppedImages.length;frameIx++){
-        List<Map<String,dynamic>> confResMap = await runReaderOnFrame(frameIx=frameIx, croppedImages=croppedImages);
+      List<List<Map<String, dynamic>>> structuredResutls =
+          List(croppedImages.length);
+      for (int frameIx = 0; frameIx < croppedImages.length; frameIx++) {
+        List<Map<String, dynamic>> confResMap = await runReaderOnFrame(
+            frameIx = frameIx, croppedImages = croppedImages);
         results[frameIx] = [confResMap[0]['res']];
-        confidences[frameIx]=[confResMap[0]['confidence']];
-        structuredResutls[frameIx]=confResMap;
+        confidences[frameIx] = [confResMap[0]['confidence']];
+        structuredResutls[frameIx] = confResMap;
       }
-      resultStreamController.sink.add( {'result':results,'confidence':confidences} );
-      structuredResultStreamController.sink.add( structuredResutls );
+      resultStreamController.sink
+          .add({'result': results, 'confidence': confidences});
+      structuredResultStreamController.sink.add(structuredResutls);
 
       _isDoneConvertingImage = true;
     });
     isRecording = true;
   }
 
-  void stopImageStream(){
+  void stopImageStream() {
     isRecording = false;
     cameraController.stopImageStream();
     stopCaptureTimer();
@@ -346,11 +374,11 @@ class MultiFrameBlock {
     _reader = ImageReader(model: model);
   }
 
-  toggleShowRawImages(){
+  toggleShowRawImages() {
     showActualCroppedFrames = !showActualCroppedFrames;
   }
 
-  toggleInvertImageColors(){
+  toggleInvertImageColors() {
     invertColors = !invertColors;
     frameController.sink.add(this);
   }
