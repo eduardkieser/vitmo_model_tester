@@ -124,8 +124,6 @@ class _MultiFrameScreenState extends State<MultiFrameScreen> {
       stream: bloc.frameController.stream,
       initialData: bloc,
       builder: (context, snapshot){
-        print('rebuilding');
-        print(bloc.invertColors);
         return _buildFloatingMenu(bloc);
       },
     );

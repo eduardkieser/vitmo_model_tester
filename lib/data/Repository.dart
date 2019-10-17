@@ -75,9 +75,9 @@ class Repository {
   }
 
 Future<Map<String,List<VitmoEntry>>> getParsedEntriesList()async{
-    print('reading entries');
+  //print('reading entries');
   List<Entry> entriesList = await getEntries();
-  print('len of entries: ${entriesList.length}');
+  //print('len of entries: ${entriesList.length}');
     Map<String,List<VitmoEntry>> signalsMap = {};
     entriesList.forEach((entry){
       if (signalsMap.containsKey(entry.label)){

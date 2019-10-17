@@ -219,28 +219,28 @@ class MultiFrameBlock {
   bool _isDoneConvertingImage = true;
 
   void addListeners() {
-    resultStreamController.stream.listen((results) {
-      // print(results);
-      for (int frameIx = 0; frameIx < results['result'].length; frameIx++) {
-        num conf = results['confidence'][frameIx][0];
-        if (conf > 0.5) {
-          frames[frameIx].certainty = [num.parse(conf.toStringAsFixed(2))];
-          frames[frameIx].currentValue = results['result'][frameIx];
-        } else {
-          frames[frameIx].currentValue = ['nan'];
-        }
-      }
-      frameController.sink.add(this);
-    });
+    // resultStreamController.stream.listen((results) {
+    //   // print(results);
+    //   for (int frameIx = 0; frameIx < results['result'].length; frameIx++) {
+    //     num conf = results['confidence'][frameIx][0];
+    //     if (conf > 0.5) {
+    //       frames[frameIx].certainty = [num.parse(conf.toStringAsFixed(2))];
+    //       frames[frameIx].currentValue = results['result'][frameIx];
+    //     } else {
+    //       frames[frameIx].currentValue = ['nan'];
+    //     }
+    //   }
+    //   frameController.sink.add(this);
+    // });
     structuredResultStreamController.stream.listen((results) {
-      print(results);
+      // print(results);
       for (int frameIx = 0; frameIx < results.length; frameIx++) {
         List currentFrameData = results[frameIx];
-        List frameCertainties = [];
-        List frameResutls = [];
+        List<double> frameCertainties = [];
+        List<String> frameResutls = [];
         for (Map confRes in currentFrameData) {
           num conf = confRes['confidence'];
-          String res = confRes['restult'];
+          String res = confRes['res'];
           if (conf > 0.5) {
             frameCertainties.add(num.parse(conf.toStringAsFixed(2)));
             frameResutls.add(res);
@@ -249,17 +249,10 @@ class MultiFrameBlock {
             frameResutls.add('nan');
           }
         }
-      }
-      //     num conf = results['confidence'][frameIx][0];
-      //     if (conf>0.5){
-      //       frames[frameIx].certainty = num.parse(conf.toStringAsFixed(2));
-      //       frames[frameIx].currentValue = results['result'][frameIx][0];
-      //     }
-      //     else{
-      //       frames[frameIx].currentValue = 'nan';
-      //     }
-      //   }
-      //   frameController.sink.add(this);
+        frames[frameIx].currentValue = frameResutls;
+        frames[frameIx].certainty = frameCertainties;
+    }
+    frameController.sink.add(this);
     });
   }
 
@@ -276,12 +269,12 @@ class MultiFrameBlock {
   }
 
   storeSnapshotToDb() {
-    print('calling store to db');
+    // print('calling store to db');
     if (frames.length == 0) {
       return;
     }
     frames.forEach((frame) {
-      print('adding frame');
+      // print('adding frame');
       repository.insertEntry(Entry(
           // id: randomGenerator.nextInt(2^32),
           value: frame.currentValue[0] == 'nan'
@@ -354,8 +347,8 @@ class MultiFrameBlock {
         confidences[frameIx] = [confResMap[0]['confidence']];
         structuredResutls[frameIx] = confResMap;
       }
-      resultStreamController.sink
-          .add({'result': results, 'confidence': confidences});
+      // resultStreamController.sink
+      //     .add({'result': results, 'confidence': confidences});
       structuredResultStreamController.sink.add(structuredResutls);
 
       _isDoneConvertingImage = true;

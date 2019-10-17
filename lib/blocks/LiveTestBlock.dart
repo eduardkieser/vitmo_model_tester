@@ -58,8 +58,8 @@ class LiveTestBlock {
     frames[0].firstCorner = frames[0].firstCorner + details.delta / 1;
     frames[0].secondCorner = frames[0].secondCorner + details.delta / 1;
 
-    String firstCornerString = frames[0].firstCorner.toString();
-    String secondCornerString = frames[0].secondCorner.toString();
+    // String firstCornerString = frames[0].firstCorner.toString();
+    // String secondCornerString = frames[0].secondCorner.toString();
     // print(
     //     'First corner: $firstCornerString - Second corner: $secondCornerString');
 

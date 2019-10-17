@@ -11,7 +11,7 @@ class RoiFrameModel{
   String label = 'X';
   int recognisedLabel = 0;
   List<double> certainty = [0,0,0];
-  List<String> currentValue = ['nan'];
+  List<String> currentValue = ['nan','nan','nan'];
   bool isMMM;
 
   RoiFrameModel({this.firstCorner, this.label='X', this.isMMM=false}){
