@@ -6,6 +6,7 @@ import 'package:vitmo_model_tester/screens/SignalsScreen.dart';
 import 'package:vitmo_model_tester/blocks/SignalsBloc.dart';
 import 'package:vitmo_model_tester/screens/TimeSeriesChartExample.dart';
 import 'package:vitmo_model_tester/widgets/time_series_chart.dart';
+import 'package:flutter/services.dart';
 
 class MultiFrameScreen extends StatefulWidget {
   final MultiFrameBlock bloc;
@@ -34,6 +35,16 @@ class _MultiFrameScreenState extends State<MultiFrameScreen> {
 
   Widget _buildFloatingMenu(bloc){
     var _fabMiniMenuItemList = [
+    FabMiniMenuItem.withText(
+       Icon(Icons.swap_vert),
+       Colors.blue,
+       4.0,
+       "Flip Upside Down",
+       bloc.flipScreen,
+       "flip upside down",
+       Colors.blue,
+       Colors.white,
+      ),
     FabMiniMenuItem.withText(
        Icon(Icons.developer_mode),
        Colors.blue,
@@ -154,6 +165,7 @@ class _MultiFrameScreenState extends State<MultiFrameScreen> {
     @override
     dispose(){
       widget.bloc.dispose();
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
     return Scaffold(
       body: ZoomAndPanStack(bloc:widget.bloc),

@@ -48,8 +48,10 @@ class MultiFrameBlock {
   bool invertColors = false;
   bool isDemoMode = false;
 
+  bool isUpsideDown = false;
+
   List<imglib.Image> demoImages = List<imglib.Image>(6);
-  List<Image> demoDisplayImages = List<Image> (6);
+  List<Image> demoDisplayImages = List<Image>(6);
   int currentDemoFrameIndex = 0;
   Timer demoTimer;
 
@@ -247,8 +249,8 @@ class MultiFrameBlock {
         }
         frames[frameIx].currentValue = frameResutls;
         frames[frameIx].certainty = frameCertainties;
-    }
-    frameController.sink.add(this);
+      }
+      frameController.sink.add(this);
     });
   }
 
@@ -271,24 +273,24 @@ class MultiFrameBlock {
     }
     int timeStamp = DateTime.now().millisecondsSinceEpoch;
     frames.forEach((frame) {
-      if (frame.currentValue.length==1){
+      if (frame.currentValue.length == 1) {
         repository.insertEntry(Entry(
-          value: frame.currentValue[0] == 'nan'
-              ? -1
-              : int.parse(frame.currentValue[0]),
-          certainty: frame.certainty[0],
-          label: frame.label,
-          timeStamp: timeStamp));
-          return;
-      }else {
-        for (int i=0; i<frame.currentValue.length; i++){
+            value: frame.currentValue[0] == 'nan'
+                ? -1
+                : int.parse(frame.currentValue[0]),
+            certainty: frame.certainty[0],
+            label: frame.label,
+            timeStamp: timeStamp));
+        return;
+      } else {
+        for (int i = 0; i < frame.currentValue.length; i++) {
           repository.insertEntry(Entry(
-          value: frame.currentValue[i] == 'nan'
-              ? -1
-              : int.parse(frame.currentValue[i]),
-          certainty: frame.certainty[i],
-          label: '${frame.label}_$i',
-          timeStamp: timeStamp));
+              value: frame.currentValue[i] == 'nan'
+                  ? -1
+                  : int.parse(frame.currentValue[i]),
+              certainty: frame.certainty[i],
+              label: '${frame.label}_$i',
+              timeStamp: timeStamp));
         }
       }
     });
@@ -333,7 +335,7 @@ class MultiFrameBlock {
     cameraController.startImageStream((CameraImage availableYUV) async {
       // print('streaming');
       // if demoMode{
-        // availableYUV = read image from file of from image stream
+      // availableYUV = read image from file of from image stream
       // }
       if (!_isDoneConvertingImage) return;
       _isDoneConvertingImage = false;
@@ -346,7 +348,8 @@ class MultiFrameBlock {
         'cropData': cropData,
         'invertColors': invertColors,
         'isDemoMode': isDemoMode,
-        'demoImage' : demoImages[currentDemoFrameIndex%5]
+        'demoImage': demoImages[currentDemoFrameIndex % 5],
+        'isUpsideDown': isUpsideDown
       };
       croppedImages = await compute(
           ImageConverter.convertCopyRotateSetFast, convertCropData);
@@ -388,37 +391,53 @@ class MultiFrameBlock {
     frameController.sink.add(this);
   }
 
-  toggleDemoMode(){
+  toggleDemoMode() {
     isDemoMode = !isDemoMode;
     print('demo mode is $isDemoMode');
     updateDemoIndexTimer();
     frameController.sink.add(this);
   }
 
-  loadDemoImageAssets()async{
-    for (int fIx =0;fIx<6;fIx++){
-      String fileName = 'assets/images/IMG_0${fIx+1}.png';
+  loadDemoImageAssets() async {
+    for (int fIx = 0; fIx < 6; fIx++) {
+      String fileName = 'assets/images/IMG_0${fIx + 1}.png';
       ByteData data = await rootBundle.load(fileName);
-      List<int> imgFile = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      List<int> imgFile =
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       demoImages[fIx] = imglib.decodeImage(imgFile);
       demoDisplayImages[fIx] = Image.asset(fileName);
     }
   }
 
   updateDemoIndexTimer() {
-    if (isDemoMode){
+    if (isDemoMode) {
       demoTimer = Timer.periodic(Duration(seconds: 5), (Timer t) {
-      currentDemoFrameIndex++;
-    });
-    }else{
-      if (captureTimer.isActive){
+        currentDemoFrameIndex++;
+      });
+    } else {
+      if (captureTimer.isActive) {
         demoTimer.cancel();
       }
     }
   }
 
-  sendAsCSV(){
+  sendAsCSV() {
     repository.getCsvFromRepo();
+  }
+
+  flipScreen() {
+    isUpsideDown = !isUpsideDown;
+
+    if (isUpsideDown) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitDown,
+      ]);
+    } else {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+    }
+    frameController.sink.add(this);
   }
 
   dispose() {

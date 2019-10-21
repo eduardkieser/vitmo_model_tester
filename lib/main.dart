@@ -30,6 +30,7 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
       ]);
+
     return MaterialApp(
       title: 'ONR Benchmarker',
       theme: ThemeData(

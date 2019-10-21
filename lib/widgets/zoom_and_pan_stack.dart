@@ -99,6 +99,13 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
 
 
   Widget _buildPreviewWindow() {
+    double angle = 0;
+    if (bloc.isUpsideDown){
+      angle = pi;
+    }
+    else{
+      angle = 0;
+    }
     return StreamBuilder(
         stream: widget.bloc.cameraIsInitializedStreamController.stream,
         initialData: false,
@@ -113,7 +120,10 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
                   alignment: Alignment.center,
                   width: _previewWidth,
                   height: _previewHeight,
-                  child: CameraPreview(widget.bloc.cameraController)),
+                  child: Transform.rotate(
+                    angle: angle,
+                    child: CameraPreview(widget.bloc.cameraController)),
+                  )
             );
           } else {
             return Center(child: CircularProgressIndicator());

@@ -37,9 +37,11 @@ class ImageConverter{
         img = imglib.copyRotate(img, -90);
       }
     }
-
     if (convertCropData['invertColors']){
       img = imglib.invert(img);
+    }
+    if (convertCropData['isUpsideDown'] & !convertCropData['isDemoMode']){
+      img = imglib.copyRotate(img, 180);
     }
 
     Map<String,dynamic> cropData = convertCropData['cropData']; 
