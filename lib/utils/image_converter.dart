@@ -29,6 +29,15 @@ class ImageConverter{
       return null;
     }
 
+    if (convertCropData['isDemoMode']){
+      if (convertCropData['demoImage'] != null){
+        print('injecting demo image into crop pipeline');
+        img = convertCropData['demoImage'];
+        img = imglib.copyResize(img,height: 1280, width: 720);
+        img = imglib.copyRotate(img, -90);
+      }
+    }
+
     if (convertCropData['invertColors']){
       img = imglib.invert(img);
     }

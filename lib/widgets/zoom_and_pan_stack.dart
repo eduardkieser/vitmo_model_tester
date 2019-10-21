@@ -135,12 +135,22 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     );
   }
 
+  _builDemoScreenWidget(){
+    if (bloc.isDemoMode){
+      if (bloc.demoDisplayImages[bloc.currentDemoFrameIndex%5] != null){
+        return bloc.demoDisplayImages[bloc.currentDemoFrameIndex%5];
+      }
+    }
+    return Container();
+  }
+
   Widget _buildStackWidget(MultiFrameBlock bloc) {
     List<Widget> roiFrames = _buildRoiFrames(bloc);
     _getViewSize('Image Widget');
     return Stack(
       children: <Widget>[
         _buildPreviewWindow(),
+        _builDemoScreenWidget(),
         Stack(
           children: roiFrames,
         ),

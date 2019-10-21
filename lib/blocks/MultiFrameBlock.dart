@@ -3,6 +3,7 @@ import 'dart:async' as prefix0;
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:vitmo_model_tester/data/entry_model.dart';
 import 'package:vitmo_model_tester/models/model_data.dart';
@@ -16,10 +17,12 @@ import 'dart:math';
 import 'package:vitmo_model_tester/data/Repository.dart';
 import 'package:vitmo_model_tester/screens/SignalsScreen.dart';
 import 'package:vitmo_model_tester/screens/TimeSeriesChartExample.dart';
+import 'dart:io';
 
 class MultiFrameBlock {
   MultiFrameBlock(this.model) {
     prepReader(model);
+    loadDemoImageAssets();
   }
   ModelData model;
   ImageReader _reader;
@@ -43,6 +46,12 @@ class MultiFrameBlock {
   bool showActualCroppedFrames = false;
   bool isRecording = false;
   bool invertColors = false;
+  bool isDemoMode = false;
+
+  List<imglib.Image> demoImages = List<imglib.Image>(6);
+  List<Image> demoDisplayImages = List<Image> (6);
+  int currentDemoFrameIndex = 0;
+  Timer demoTimer;
 
   int capturePeriodInMilliSeconds = 1000;
   Timer captureTimer;
@@ -219,19 +228,6 @@ class MultiFrameBlock {
   bool _isDoneConvertingImage = true;
 
   void addListeners() {
-    // resultStreamController.stream.listen((results) {
-    //   // print(results);
-    //   for (int frameIx = 0; frameIx < results['result'].length; frameIx++) {
-    //     num conf = results['confidence'][frameIx][0];
-    //     if (conf > 0.5) {
-    //       frames[frameIx].certainty = [num.parse(conf.toStringAsFixed(2))];
-    //       frames[frameIx].currentValue = results['result'][frameIx];
-    //     } else {
-    //       frames[frameIx].currentValue = ['nan'];
-    //     }
-    //   }
-    //   frameController.sink.add(this);
-    // });
     structuredResultStreamController.stream.listen((results) {
       // print(results);
       for (int frameIx = 0; frameIx < results.length; frameIx++) {
@@ -273,16 +269,28 @@ class MultiFrameBlock {
     if (frames.length == 0) {
       return;
     }
+    int timeStamp = DateTime.now().millisecondsSinceEpoch;
     frames.forEach((frame) {
-      // print('adding frame');
-      repository.insertEntry(Entry(
-          // id: randomGenerator.nextInt(2^32),
+      if (frame.currentValue.length==1){
+        repository.insertEntry(Entry(
           value: frame.currentValue[0] == 'nan'
               ? -1
               : int.parse(frame.currentValue[0]),
           certainty: frame.certainty[0],
           label: frame.label,
-          timeStamp: DateTime.now().millisecondsSinceEpoch));
+          timeStamp: timeStamp));
+          return;
+      }else {
+        for (int i=0; i<frame.currentValue.length; i++){
+          repository.insertEntry(Entry(
+          value: frame.currentValue[i] == 'nan'
+              ? -1
+              : int.parse(frame.currentValue[i]),
+          certainty: frame.certainty[i],
+          label: '${frame.label}_$i',
+          timeStamp: timeStamp));
+        }
+      }
     });
   }
 
@@ -291,6 +299,7 @@ class MultiFrameBlock {
   Future<void> startImageStream() async {
     startCaptureTimer();
 
+    // Factor these functinos out of here
     Future<Map<String, dynamic>> runReaderOnImage(
         int frameIx, imglib.Image croppedImage) async {
       var result = await _reader.readImageFromBinary(croppedImage);
@@ -323,6 +332,9 @@ class MultiFrameBlock {
 
     cameraController.startImageStream((CameraImage availableYUV) async {
       // print('streaming');
+      // if demoMode{
+        // availableYUV = read image from file of from image stream
+      // }
       if (!_isDoneConvertingImage) return;
       _isDoneConvertingImage = false;
       Map<String, dynamic> cropData = {
@@ -332,7 +344,9 @@ class MultiFrameBlock {
       Map<String, dynamic> convertCropData = {
         'image': availableYUV,
         'cropData': cropData,
-        'invertColors': invertColors
+        'invertColors': invertColors,
+        'isDemoMode': isDemoMode,
+        'demoImage' : demoImages[currentDemoFrameIndex%5]
       };
       croppedImages = await compute(
           ImageConverter.convertCopyRotateSetFast, convertCropData);
@@ -347,8 +361,6 @@ class MultiFrameBlock {
         confidences[frameIx] = [confResMap[0]['confidence']];
         structuredResutls[frameIx] = confResMap;
       }
-      // resultStreamController.sink
-      //     .add({'result': results, 'confidence': confidences});
       structuredResultStreamController.sink.add(structuredResutls);
 
       _isDoneConvertingImage = true;
@@ -374,6 +386,39 @@ class MultiFrameBlock {
   toggleInvertImageColors() {
     invertColors = !invertColors;
     frameController.sink.add(this);
+  }
+
+  toggleDemoMode(){
+    isDemoMode = !isDemoMode;
+    print('demo mode is $isDemoMode');
+    updateDemoIndexTimer();
+    frameController.sink.add(this);
+  }
+
+  loadDemoImageAssets()async{
+    for (int fIx =0;fIx<6;fIx++){
+      String fileName = 'assets/images/IMG_0${fIx+1}.png';
+      ByteData data = await rootBundle.load(fileName);
+      List<int> imgFile = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      demoImages[fIx] = imglib.decodeImage(imgFile);
+      demoDisplayImages[fIx] = Image.asset(fileName);
+    }
+  }
+
+  updateDemoIndexTimer() {
+    if (isDemoMode){
+      demoTimer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+      currentDemoFrameIndex++;
+    });
+    }else{
+      if (captureTimer.isActive){
+        demoTimer.cancel();
+      }
+    }
+  }
+
+  sendAsCSV(){
+    repository.getCsvFromRepo();
   }
 
   dispose() {

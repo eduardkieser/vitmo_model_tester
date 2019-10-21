@@ -35,6 +35,26 @@ class _MultiFrameScreenState extends State<MultiFrameScreen> {
   Widget _buildFloatingMenu(bloc){
     var _fabMiniMenuItemList = [
     FabMiniMenuItem.withText(
+       Icon(Icons.developer_mode),
+       Colors.blue,
+       4.0,
+       "Toggle Demo Mode",
+       bloc.toggleDemoMode,
+       "toggle demo mode",
+       Colors.blue,
+       Colors.white,
+      ),
+    FabMiniMenuItem.withText(
+       Icon(Icons.file_upload),
+       Colors.blue,
+       4.0,
+       "Send as CSV",
+       bloc.repository.sendDataAsEmail,
+       "send as csv",
+       Colors.blue,
+       Colors.white,
+      ),
+    FabMiniMenuItem.withText(
        Icon(Icons.add),
        Colors.blue,
        4.0,

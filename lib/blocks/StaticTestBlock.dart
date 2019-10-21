@@ -56,11 +56,11 @@ class StaticTestBloc{
 
 }
 
-class StaticPerformanceState{
-  StaticPerformanceState();
-}
+// class StaticPerformanceState{
+//   StaticPerformanceState();
+// }
 
-class StaticPerformanceDataState extends StaticPerformanceState{
-  final List<PerformanceData> performanceData;
-  StaticPerformanceDataState(this.performanceData);
-}
+// class StaticPerformanceDataState extends StaticPerformanceState{
+//   final List<PerformanceData> performanceData;
+//   StaticPerformanceDataState(this.performanceData);
+// }

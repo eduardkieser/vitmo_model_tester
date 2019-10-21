@@ -31,7 +31,7 @@ class _TimeTraceState extends State<TimeTrace> {
     return Column(children: <Widget>[
       Center(child:Text(title)),
       Container(
-        height: 300,
+        height: 150,
         child: EntriesLineChart.fromEntriesList(entriesList),)
     ],);
   }

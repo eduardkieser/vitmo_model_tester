@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -34,6 +34,10 @@ dependencies:
   path: 
   charts_flutter: ^0.8.0
   stats: ^0.2.0+3
+  auto_size_text: ^2.1.0
+  csv: ^4.0.3
+  flutter_email_sender: ^2.0.3
+  flutter_mailer: ^0.4.1+1
 
 dev_dependencies:
   flutter_test:
@@ -63,3 +67,9 @@ flutter:
    - assets/Resnet_20.tflite
    - assets/Resnet20_0_to_20.tflite
    - assets/Resnet20_BatchFirst.tflite
+   - assets/images/IMG_01.png
+   - assets/images/IMG_02.png
+   - assets/images/IMG_03.png
+   - assets/images/IMG_04.png
+   - assets/images/IMG_05.png
+   - assets/images/IMG_06.png

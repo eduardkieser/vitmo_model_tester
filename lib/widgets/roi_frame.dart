@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
@@ -92,6 +93,21 @@ class RoiFrame extends StatelessWidget {
     bloc.selectFrame(frameIndex);
   }
 
+  String parseValeString(){
+    List valueList = bloc.frames[frameIndex].currentValue;
+    String valueString = '';
+    valueList.forEach((value){
+      valueString = valueString + '$value ';
+    });
+    return valueString;
+  }
+
+  String parseCertaintyString(){
+    List<double> certaintyList = bloc.frames[frameIndex].certainty;
+    double certainty = certaintyList.reduce(min);
+    return certainty.toStringAsFixed(2);
+  }
+
   Widget _buildFirstTag(MultiFrameBlock bloc) {
     RoiFrameModel frameData = bloc.frames[frameIndex];
     bool _isTop = frameData.firstCorner.dy < frameData.secondCorner.dy;
@@ -116,7 +132,10 @@ class RoiFrame extends StatelessWidget {
           moveFirstTag(details: details);
         },
         child: Container(
-          color: tagColor,
+          decoration: BoxDecoration(
+            color: tagColor,
+            borderRadius: BorderRadius.all(Radius.circular(5))
+          ),
           child: Center(
             child: Text(frameData.label),
           ),
@@ -148,9 +167,16 @@ class RoiFrame extends StatelessWidget {
           moveSecondTag(details: details);
         },
         child: Container(
-          color: tagColor,
+          // padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: tagColor,
+            borderRadius: BorderRadius.all(Radius.circular(5))
+          ),
           child: Center(
-              child: Text(bloc.frames[frameIndex].currentValue.toString())),
+              child: AutoSizeText(
+                parseValeString(),
+                textAlign: TextAlign.center,
+                )),
         ),
       ),
     );
@@ -172,7 +198,7 @@ class RoiFrame extends StatelessWidget {
       RoiFrameModel frameData = bloc.frames[frameIndex];
       if (frameData.isMMM) {
         Color borderColor = Colors.transparent;
-        double sizeFactor = 0.6;
+        double sizeFactor = 0.495;
         return Stack(
           children: <Widget>[
             Positioned(
@@ -221,9 +247,11 @@ class RoiFrame extends StatelessWidget {
         );
       } else {
         return Container(
-            color: bloc.selectedFrameIndex == this.frameIndex
+            decoration: BoxDecoration(
+                color: bloc.selectedFrameIndex == this.frameIndex
                 ? Colors.white.withAlpha(100)
-                : Colors.white.withAlpha(50));
+                : Colors.white.withAlpha(50),
+                borderRadius: BorderRadius.all(Radius.circular(5))));
       }
     }
 
@@ -255,7 +283,7 @@ class RoiFrame extends StatelessWidget {
 
             Center(
                 child: Text(
-                    "label: ${bloc.frames[frameIndex].currentValue} \n cartainty:${bloc.frames[frameIndex].certainty[0].toStringAsFixed(2)}")),
+                    "label: ${parseValeString()} \n cartainty:${parseCertaintyString()}")),
           ])),
     );
   }

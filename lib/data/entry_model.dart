@@ -1,7 +1,5 @@
 
-
 class Entry{
-  // int id;
   int timeStamp;
   int value;
   String label;
