@@ -59,11 +59,7 @@ class _TimeTraceState extends State<TimeTrace> {
 
             // get first element from Map
             var entriesMap = snapshot.data;
-            List<VitmoEntry> entriesList = entriesMap[entriesMap.keys.cast().toList()[0]];
-
-            // return EntriesLineChart.fromEntriesList(entriesList);
-            // return EntriesLineChart.withSampleData();
-            // return buildLineChartWithTitle(entriesList, 'AwsomeTitle!');
+            // List<VitmoEntry> entriesList = entriesMap[entriesMap.keys.cast().toList()[0]];
             return buildListOfCharts(entriesMap);
 
           } else {

@@ -31,8 +31,6 @@ class MultiFrameBlock {
     RoiFrameModel(firstCorner: Offset(50.0, 50.0), label: 'HR'),
     RoiFrameModel(firstCorner: Offset(320.0, 50.0), label: 'ABP'),
     RoiFrameModel(firstCorner: Offset(50.0, 300.0), label: 'RespR'),
-    RoiFrameModel(
-        firstCorner: Offset(300.0, 300.0), label: 'Sp02', isMMM: true),
   ];
   int _selectedFrameIndex;
   double zoomScale = 1.0;
@@ -388,12 +386,14 @@ class MultiFrameBlock {
       _isDoneConvertingImage = true;
     });
     isRecording = true;
+    frameController.sink.add(this);
   }
 
   void stopImageStream() {
     isRecording = false;
     cameraController.stopImageStream();
     stopCaptureTimer();
+    frameController.sink.add(this);
   }
 
   prepReader(ModelData model) {

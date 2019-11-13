@@ -35,6 +35,7 @@ class _MultiFrameSettingsState extends State<MultiFrameSettings> {
   }
 
   showCharts() {
+    // BackButtonInterceptor.remove(myInterceptor);
     Navigator.push(
       context,
       // MaterialPageRoute(builder: (context) => EntriesLineChart.fromEntriesList(widget.bloc.) ),
