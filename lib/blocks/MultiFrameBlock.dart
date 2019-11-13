@@ -47,7 +47,7 @@ class MultiFrameBlock {
   bool isRecording = false;
   bool invertColors = false;
   bool isDemoMode = false;
-
+  bool showSettingsWidget = false;
   bool isUpsideDown = false;
 
   List<imglib.Image> demoImages = List<imglib.Image>(6);
@@ -170,6 +170,24 @@ class MultiFrameBlock {
     frameController.sink.add(this);
   }
 
+  void checkDelete(DragEndDetails details, int frameIndex){
+    // The logic that I would like to hold here is that if more than 1/4 of the frame is outside the screen on the top, it will be deleted.
+        _selectedFrameIndex = frameIndex;
+    double _top = [selectedFrame.firstCorner.dy, selectedFrame.secondCorner.dy].reduce(min);
+    double _height = (selectedFrame.firstCorner.dy-selectedFrame.secondCorner.dy).abs();
+    bool _isFarOut;
+    if ((_top < 0) & (_top.abs() > _height / 4)) {
+      _isFarOut = true;
+    } else {
+      _isFarOut = false;
+    }
+    if (_isFarOut){
+      removeSelectedFrame();
+    }
+  }
+
+  
+
   void addNewFrame(bool isMMM) {
     String label = frameAddingWidgetCurrentLabel;
     if (label == null) {
@@ -187,6 +205,7 @@ class MultiFrameBlock {
   void toggleIsAdding() {
     isAddingNewframe = !isAddingNewframe;
     isAddingNewFrameStreamController.sink.add(isAddingNewframe);
+    frameController.sink.add(this);
   }
 
   void removeSelectedFrame() {
@@ -375,7 +394,6 @@ class MultiFrameBlock {
     isRecording = false;
     cameraController.stopImageStream();
     stopCaptureTimer();
-    // readAllEntriesFromDb();
   }
 
   prepReader(ModelData model) {
@@ -384,6 +402,7 @@ class MultiFrameBlock {
 
   toggleShowRawImages() {
     showActualCroppedFrames = !showActualCroppedFrames;
+    frameController.sink.add(this);
   }
 
   toggleInvertImageColors() {
@@ -393,8 +412,13 @@ class MultiFrameBlock {
 
   toggleDemoMode() {
     isDemoMode = !isDemoMode;
-    print('demo mode is $isDemoMode');
     updateDemoIndexTimer();
+    frameController.sink.add(this);
+  }
+
+  toggleShowSettings(){
+    showSettingsWidget = !showSettingsWidget;
+    print('show settings: $showSettingsWidget');
     frameController.sink.add(this);
   }
 
@@ -410,12 +434,13 @@ class MultiFrameBlock {
   }
 
   updateDemoIndexTimer() {
+    print('demo mode is $isDemoMode');
     if (isDemoMode) {
       demoTimer = Timer.periodic(Duration(seconds: 5), (Timer t) {
         currentDemoFrameIndex++;
       });
     } else {
-      if (captureTimer.isActive) {
+      if (demoTimer.isActive) {
         demoTimer.cancel();
       }
     }

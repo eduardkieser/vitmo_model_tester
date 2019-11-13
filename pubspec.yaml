@@ -38,6 +38,7 @@ dependencies:
   csv: ^4.0.3
   flutter_email_sender: ^2.0.3
   flutter_mailer: ^0.4.1+1
+  back_button_interceptor: ^4.2.1
 
 dev_dependencies:
   flutter_test:

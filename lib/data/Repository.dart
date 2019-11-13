@@ -86,6 +86,9 @@ class Repository {
     Map<String, List<VitmoEntry>> parsedEntries = await getParsedEntriesList();
     List<DateTime> allTimeStamps = [];
     List<String> allColumns = [];
+    if (parsedEntries == null){
+      return null;
+    }
     parsedEntries.forEach((key, listEnty) {
       allColumns.add(key);
       listEnty.forEach((entry) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 
 class AddNewFrame extends StatefulWidget {
   AddNewFrame({Key key, this.bloc}) : super(key: key);
@@ -13,6 +14,16 @@ class AddNewFrame extends StatefulWidget {
 class _AddNewFrameState extends State<AddNewFrame> {
 
   bool isMMM = false;
+
+    @override
+  void initState() { 
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
+  }
+  bool myInterceptor(bool stopDefaultButtonEvent) {
+    widget.bloc.toggleIsAdding(); // Do some stuff.
+    return true;
+  }
 
   Widget _buildDropDownLabelsList() {
     List<String> labelOptions = ['HR', 'ABP', 'SpO2', 'Temp', 'RespRate'];

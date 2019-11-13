@@ -17,16 +17,6 @@ class StaticTestBloc{
 
   Stream<double> get durationStream => _durationStreamController.stream.asBroadcastStream();
 
-  // final _resultsStreamController = StreamController<StaticPerformanceState>();
-
-  // Stream<StaticPerformanceDataState> get performanceSnapshot =>
-  //   _resultsStreamController.stream;
-
-  // void addPerformaceSnapshot(List<PerformanceData> snapshot){
-  //   _resultsStreamController.sink
-  //   .add(StaticPerformanceDataState(snapshot));
-  // }
-
   void addInt(int oneIfTrue){
     _binaryResults.add(oneIfTrue);
     double _result = _binaryResults.reduce((a,b)=>a+b) / _binaryResults.length;
@@ -55,12 +45,3 @@ class StaticTestBloc{
 
 
 }
-
-// class StaticPerformanceState{
-//   StaticPerformanceState();
-// }
-
-// class StaticPerformanceDataState extends StaticPerformanceState{
-//   final List<PerformanceData> performanceData;
-//   StaticPerformanceDataState(this.performanceData);
-// }
