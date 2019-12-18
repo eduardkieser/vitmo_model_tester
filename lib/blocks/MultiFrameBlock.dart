@@ -168,23 +168,23 @@ class MultiFrameBlock {
     frameController.sink.add(this);
   }
 
-  void checkDelete(DragEndDetails details, int frameIndex){
+  void checkDelete(DragEndDetails details, int frameIndex) {
     // The logic that I would like to hold here is that if more than 1/4 of the frame is outside the screen on the top, it will be deleted.
-        _selectedFrameIndex = frameIndex;
-    double _top = [selectedFrame.firstCorner.dy, selectedFrame.secondCorner.dy].reduce(min);
-    double _height = (selectedFrame.firstCorner.dy-selectedFrame.secondCorner.dy).abs();
+    _selectedFrameIndex = frameIndex;
+    double _top = [selectedFrame.firstCorner.dy, selectedFrame.secondCorner.dy]
+        .reduce(min);
+    double _height =
+        (selectedFrame.firstCorner.dy - selectedFrame.secondCorner.dy).abs();
     bool _isFarOut;
     if ((_top < 0) & (_top.abs() > _height / 4)) {
       _isFarOut = true;
     } else {
       _isFarOut = false;
     }
-    if (_isFarOut){
+    if (_isFarOut) {
       removeSelectedFrame();
     }
   }
-
-  
 
   void addNewFrame(bool isMMM) {
     String label = frameAddingWidgetCurrentLabel;
@@ -210,6 +210,7 @@ class MultiFrameBlock {
     if (frames.length - 1 < _selectedFrameIndex) {
       _selectedFrameIndex = frames.length - 1;
     }
+    croppedImages.removeAt(selectedFrameIndex);
     frames.removeAt(selectedFrameIndex);
     frameController.sink.add(this);
   }
@@ -248,7 +249,6 @@ class MultiFrameBlock {
 
   void addListeners() {
     structuredResultStreamController.stream.listen((results) {
-      // print(results);
       for (int frameIx = 0; frameIx < results.length; frameIx++) {
         List currentFrameData = results[frameIx];
         List<double> frameCertainties = [];
@@ -284,7 +284,6 @@ class MultiFrameBlock {
   }
 
   storeSnapshotToDb() {
-    // print('calling store to db');
     if (frames.length == 0) {
       return;
     }
@@ -338,6 +337,11 @@ class MultiFrameBlock {
 
     Future<List<Map<String, dynamic>>> runReaderOnFrame(
         int frameIx, List<List<imglib.Image>> croppedImages) async {
+      if (frameIx >= frames.length) {
+        return [
+          {'confidence': 0.0, 'res': 'nan'}
+        ];
+      }
       if (frames[frameIx].isMMM) {
         return [
           await runReaderOnImage(frameIx, croppedImages[frameIx][0]),
@@ -350,10 +354,6 @@ class MultiFrameBlock {
     }
 
     cameraController.startImageStream((CameraImage availableYUV) async {
-      // print('streaming');
-      // if demoMode{
-      // availableYUV = read image from file of from image stream
-      // }
       if (!_isDoneConvertingImage) return;
       _isDoneConvertingImage = false;
       Map<String, dynamic> cropData = {
@@ -416,9 +416,8 @@ class MultiFrameBlock {
     frameController.sink.add(this);
   }
 
-  toggleShowSettings(){
+  toggleShowSettings() {
     showSettingsWidget = !showSettingsWidget;
-    print('show settings: $showSettingsWidget');
     frameController.sink.add(this);
   }
 
@@ -434,7 +433,6 @@ class MultiFrameBlock {
   }
 
   updateDemoIndexTimer() {
-    print('demo mode is $isDemoMode');
     if (isDemoMode) {
       demoTimer = Timer.periodic(Duration(seconds: 5), (Timer t) {
         currentDemoFrameIndex++;
