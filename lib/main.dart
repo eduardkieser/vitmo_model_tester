@@ -31,6 +31,8 @@ class _MyAppState extends State<MyApp> {
         DeviceOrientation.portraitUp,
       ]);
 
+    SystemChrome.setEnabledSystemUIOverlays([]);
+
     return MaterialApp(
       title: 'ONR Benchmarker',
       theme: ThemeData(

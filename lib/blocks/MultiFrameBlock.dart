@@ -31,8 +31,6 @@ class MultiFrameBlock {
     RoiFrameModel(firstCorner: Offset(50.0, 50.0), label: 'HR'),
     RoiFrameModel(firstCorner: Offset(320.0, 50.0), label: 'ABP'),
     RoiFrameModel(firstCorner: Offset(50.0, 300.0), label: 'RespR'),
-    RoiFrameModel(
-        firstCorner: Offset(300.0, 300.0), label: 'Sp02', isMMM: true),
   ];
   int _selectedFrameIndex;
   double zoomScale = 1.0;
@@ -47,7 +45,7 @@ class MultiFrameBlock {
   bool isRecording = false;
   bool invertColors = false;
   bool isDemoMode = false;
-
+  bool showSettingsWidget = false;
   bool isUpsideDown = false;
 
   List<imglib.Image> demoImages = List<imglib.Image>(6);
@@ -170,6 +168,24 @@ class MultiFrameBlock {
     frameController.sink.add(this);
   }
 
+  void checkDelete(DragEndDetails details, int frameIndex) {
+    // The logic that I would like to hold here is that if more than 1/4 of the frame is outside the screen on the top, it will be deleted.
+    _selectedFrameIndex = frameIndex;
+    double _top = [selectedFrame.firstCorner.dy, selectedFrame.secondCorner.dy]
+        .reduce(min);
+    double _height =
+        (selectedFrame.firstCorner.dy - selectedFrame.secondCorner.dy).abs();
+    bool _isFarOut;
+    if ((_top < 0) & (_top.abs() > _height / 4)) {
+      _isFarOut = true;
+    } else {
+      _isFarOut = false;
+    }
+    if (_isFarOut) {
+      removeSelectedFrame();
+    }
+  }
+
   void addNewFrame(bool isMMM) {
     String label = frameAddingWidgetCurrentLabel;
     if (label == null) {
@@ -187,12 +203,14 @@ class MultiFrameBlock {
   void toggleIsAdding() {
     isAddingNewframe = !isAddingNewframe;
     isAddingNewFrameStreamController.sink.add(isAddingNewframe);
+    frameController.sink.add(this);
   }
 
   void removeSelectedFrame() {
     if (frames.length - 1 < _selectedFrameIndex) {
       _selectedFrameIndex = frames.length - 1;
     }
+    croppedImages.removeAt(selectedFrameIndex);
     frames.removeAt(selectedFrameIndex);
     frameController.sink.add(this);
   }
@@ -231,7 +249,6 @@ class MultiFrameBlock {
 
   void addListeners() {
     structuredResultStreamController.stream.listen((results) {
-      // print(results);
       for (int frameIx = 0; frameIx < results.length; frameIx++) {
         List currentFrameData = results[frameIx];
         List<double> frameCertainties = [];
@@ -267,7 +284,6 @@ class MultiFrameBlock {
   }
 
   storeSnapshotToDb() {
-    // print('calling store to db');
     if (frames.length == 0) {
       return;
     }
@@ -321,6 +337,11 @@ class MultiFrameBlock {
 
     Future<List<Map<String, dynamic>>> runReaderOnFrame(
         int frameIx, List<List<imglib.Image>> croppedImages) async {
+      if (frameIx >= frames.length) {
+        return [
+          {'confidence': 0.0, 'res': 'nan'}
+        ];
+      }
       if (frames[frameIx].isMMM) {
         return [
           await runReaderOnImage(frameIx, croppedImages[frameIx][0]),
@@ -333,10 +354,6 @@ class MultiFrameBlock {
     }
 
     cameraController.startImageStream((CameraImage availableYUV) async {
-      // print('streaming');
-      // if demoMode{
-      // availableYUV = read image from file of from image stream
-      // }
       if (!_isDoneConvertingImage) return;
       _isDoneConvertingImage = false;
       Map<String, dynamic> cropData = {
@@ -369,13 +386,14 @@ class MultiFrameBlock {
       _isDoneConvertingImage = true;
     });
     isRecording = true;
+    frameController.sink.add(this);
   }
 
   void stopImageStream() {
     isRecording = false;
     cameraController.stopImageStream();
     stopCaptureTimer();
-    // readAllEntriesFromDb();
+    frameController.sink.add(this);
   }
 
   prepReader(ModelData model) {
@@ -384,6 +402,7 @@ class MultiFrameBlock {
 
   toggleShowRawImages() {
     showActualCroppedFrames = !showActualCroppedFrames;
+    frameController.sink.add(this);
   }
 
   toggleInvertImageColors() {
@@ -393,8 +412,12 @@ class MultiFrameBlock {
 
   toggleDemoMode() {
     isDemoMode = !isDemoMode;
-    print('demo mode is $isDemoMode');
     updateDemoIndexTimer();
+    frameController.sink.add(this);
+  }
+
+  toggleShowSettings() {
+    showSettingsWidget = !showSettingsWidget;
     frameController.sink.add(this);
   }
 
@@ -415,7 +438,7 @@ class MultiFrameBlock {
         currentDemoFrameIndex++;
       });
     } else {
-      if (captureTimer.isActive) {
+      if (demoTimer.isActive) {
         demoTimer.cancel();
       }
     }

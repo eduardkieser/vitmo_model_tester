@@ -5,9 +5,9 @@ import './../widgets/roi_frame.dart';
 import './../blocks/MultiFrameBlock.dart';
 import './../models/roi_frame_model.dart';
 import 'package:vitmo_model_tester/widgets/add_new_roi.dart';
+import 'multi_frame_settings.dart';
 
 class ZoomAndPanStack extends StatefulWidget {
-  
   final MultiFrameBlock bloc;
   ZoomAndPanStack({this.bloc}) : super();
   createState() {
@@ -56,7 +56,8 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     //print('zoom: $_zoom, ${bloc.panOffset}');
   }
 
-  void _updateScaleAndPanData(ScaleUpdateDetails details, MultiFrameBlock bloc) {
+  void _updateScaleAndPanData(
+      ScaleUpdateDetails details, MultiFrameBlock bloc) {
     //print('Scale: ${details.scale}, Focal Point${details.focalPoint}');
     //_scale = _previousScale*details.scale;
     _focalDelta = details.focalPoint - _startingFocalPoint;
@@ -75,8 +76,8 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
   void _getViewSize(String widgetName) {
     _screenHeight = MediaQuery.of(context).size.height;
     _screenWidth = MediaQuery.of(context).size.width;
-    bloc.frameWidth=_screenWidth;
-    bloc.frameHeight=_screenHeight;
+    bloc.frameWidth = _screenWidth;
+    bloc.frameHeight = _screenHeight;
   }
 
   List<Widget> _buildRoiFrames(MultiFrameBlock bloc) {
@@ -91,19 +92,17 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
       ];
     } else {
       for (int i = 0; i < nFrames; i++) {
-        frameWidgets.add(RoiFrame(bloc:bloc,frameIndex: i));
+        frameWidgets.add(RoiFrame(bloc: bloc, frameIndex: i));
       }
       return frameWidgets;
     }
   }
 
-
   Widget _buildPreviewWindow() {
     double angle = 0;
-    if (bloc.isUpsideDown){
+    if (bloc.isUpsideDown) {
       angle = pi;
-    }
-    else{
+    } else {
       angle = 0;
     }
     return StreamBuilder(
@@ -116,42 +115,49 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
             double _previewHeight =
                 _previewWidth / widget.bloc.cameraController.value.aspectRatio;
             return Center(
-              child: Container(
-                  alignment: Alignment.center,
-                  width: _previewWidth,
-                  height: _previewHeight,
-                  child: Transform.rotate(
-                    angle: angle,
-                    child: CameraPreview(widget.bloc.cameraController)),
-                  )
-            );
+                child: Container(
+              alignment: Alignment.center,
+              width: _previewWidth,
+              height: _previewHeight,
+              child: Transform.rotate(
+                  angle: angle,
+                  child: CameraPreview(widget.bloc.cameraController)),
+            ));
           } else {
             return Center(child: CircularProgressIndicator());
           }
         });
   }
 
-  Widget _buildAddNewFrameWidget(){
+  Widget _buildAddNewFrameWidget() {
     return StreamBuilder(
       stream: bloc.isAddingNewFrameStreamController.stream,
       initialData: false,
-      builder: (context, snapshot){
-        if (snapshot.data){
-          return AddNewFrame(bloc:bloc);
-        }else{
+      builder: (context, snapshot) {
+        if (snapshot.data) {
+          return AddNewFrame(bloc: bloc);
+        } else {
           return Center();
         }
       },
     );
   }
 
-  _builDemoScreenWidget(){
-    if (bloc.isDemoMode){
-      if (bloc.demoDisplayImages[bloc.currentDemoFrameIndex%5] != null){
-        return bloc.demoDisplayImages[bloc.currentDemoFrameIndex%5];
+  _builDemoScreenWidget() {
+    if (bloc.isDemoMode) {
+      if (bloc.demoDisplayImages[bloc.currentDemoFrameIndex % 5] != null) {
+        return bloc.demoDisplayImages[bloc.currentDemoFrameIndex % 5];
       }
     }
     return Container();
+  }
+
+  _buildSettingsMenue() {
+    if (bloc.showSettingsWidget) {
+      return MultiFrameSettings(bloc);
+    } else {
+      return Container();
+    }
   }
 
   Widget _buildStackWidget(MultiFrameBlock bloc) {
@@ -164,7 +170,8 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
         Stack(
           children: roiFrames,
         ),
-        _buildAddNewFrameWidget()
+        _buildAddNewFrameWidget(),
+        _buildSettingsMenue()
       ],
     );
   }
@@ -179,35 +186,90 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     );
   }
 
-  // void _addNewFrameToModel(MultiFrameBlock bloc) {
-  //   setState(() {
-  //     bloc.addNewFrame();
-  //   });
-  // }
-
-  // void _clearFrames(MultiFrameBlock bloc) {
-  //   setState(() {
-  //     bloc.frames = [];
-  //     bloc.selectedFrameIndex = null;
-  //     bloc.thumbsForDisplay = [];
-  //   });
-  // }
-
-  Widget buildGestureDetector(MultiFrameBlock bloc){
+  Widget buildGestureDetector(MultiFrameBlock bloc) {
     return Container(
-            color: Colors.green,
-            child: GestureDetector(
-                onScaleStart: (ScaleStartDetails details) {
-                  _startScaleAndPan(details, bloc);
-                },
-                onScaleUpdate: (ScaleUpdateDetails details) {
-                  _updateScaleAndPanData(details, bloc);
-                },
-                onScaleEnd: (ScaleEndDetails details) {
-                  _stopScaleAndPan(details, bloc);
-                },
-                child: _buildTransformWidget(bloc)),
-          );
+      color: Colors.green,
+      child: GestureDetector(
+          onScaleStart: (ScaleStartDetails details) {
+            _startScaleAndPan(details, bloc);
+          },
+          onScaleUpdate: (ScaleUpdateDetails details) {
+            _updateScaleAndPanData(details, bloc);
+          },
+          onScaleEnd: (ScaleEndDetails details) {
+            _stopScaleAndPan(details, bloc);
+          },
+          child: _buildTransformWidget(bloc)),
+    );
+  }
+
+  Widget showSettingsButton(MultiFrameBlock bloc) {
+    return Align(
+        alignment: Alignment.bottomRight,
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: RawMaterialButton(
+              onPressed: () {
+                bloc.toggleShowSettings();
+              },
+              child: Icon(
+                Icons.settings,
+                color: Colors.white,
+                size: 30.0,
+              ),
+              shape: new CircleBorder(),
+              elevation: 2.0,
+              fillColor: Colors.blue,
+              padding: const EdgeInsets.all(15.0),
+            )));
+  }
+
+  Widget recordStopButton(MultiFrameBlock bloc) {
+    return Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: RawMaterialButton(
+              onPressed: () {
+                if (!bloc.isRecording){
+                  bloc.isRecording = true;
+                  bloc.startImageStream();
+                }else{
+                  bloc.isRecording = false;
+                  bloc.stopImageStream();
+                }
+              },
+              child: Icon(
+                bloc.isRecording? Icons.stop:Icons.play_arrow,
+                color: Colors.white,
+                size: 30.0,
+              ),
+              shape: new CircleBorder(),
+              elevation: 2.0,
+              fillColor: bloc.isRecording? Colors.red:Colors.blue,
+              padding: const EdgeInsets.all(15.0),
+            )));
+  }
+
+  Widget addFrameButton(MultiFrameBlock bloc) {
+    return Align(
+        alignment: Alignment.bottomLeft,
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: RawMaterialButton(
+              onPressed: () {
+                bloc.toggleIsAdding();
+              },
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 30.0,
+              ),
+              shape: new CircleBorder(),
+              elevation: 2.0,
+              fillColor: Colors.blue,
+              padding: const EdgeInsets.all(15.0),
+            )));
   }
 
   @override
@@ -215,8 +277,15 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     return StreamBuilder(
       stream: bloc.frameController.stream,
       initialData: bloc,
-      builder: (context, snapshot){
-        return buildGestureDetector(bloc);
+      builder: (context, snapshot) {
+        return Stack(
+          children: <Widget>[
+            buildGestureDetector(bloc),
+            (bloc.showSettingsWidget | bloc.isAddingNewframe)? Container():showSettingsButton(bloc),
+            (bloc.showSettingsWidget | bloc.isAddingNewframe)? Container():recordStopButton(bloc),
+            (bloc.showSettingsWidget | bloc.isAddingNewframe)? Container():addFrameButton(bloc)
+          ],
+        );
       },
     );
   }

@@ -8,9 +8,9 @@ class EntriesLineChart extends StatelessWidget {
   final List<charts.Series> seriesList;
   const EntriesLineChart({Key key,this.seriesList});
 
-  factory EntriesLineChart.withSampleData(){
-    return EntriesLineChart(seriesList: _createSampleData());
-  }
+  // factory EntriesLineChart.withSampleData(){
+  //   return EntriesLineChart(seriesList: _createSampleData());
+  // }
 
   factory EntriesLineChart.fromEntriesList(List<VitmoEntry> entriesList){
     return EntriesLineChart(seriesList: _parseEntriesList(entriesList));
@@ -24,29 +24,11 @@ class EntriesLineChart extends StatelessWidget {
         domainFn: (VitmoEntry entry, _) => entry.timeStamp,
         measureFn: (VitmoEntry entry, _) => entry.value,
         data: entriesList,
+        measureLowerBoundFn: (VitmoEntry entry,_) => 0
       )
     ];
   }
 
-  static List<charts.Series<VitmoEntry, DateTime>> _createSampleData() {
-    final data = [
-      new VitmoEntry(timeStamp: DateTime.fromMillisecondsSinceEpoch(1568937600000), label: 'derp',certainty: .99,value: 12),
-      new VitmoEntry(timeStamp: DateTime.fromMillisecondsSinceEpoch(1568938600000), label: 'derp',certainty: .99,value: 14),
-      new VitmoEntry(timeStamp: DateTime.fromMillisecondsSinceEpoch(1568939600000), label: 'derp',certainty: .99,value: 12),
-      new VitmoEntry(timeStamp: DateTime.fromMillisecondsSinceEpoch(1568940600000), label: 'derp',certainty: .99,value: 14),
-      new VitmoEntry(timeStamp: DateTime.fromMillisecondsSinceEpoch(1568950600000), label: 'derp',certainty: .99,value: 14),
-    ];
-
-    return [
-      new charts.Series<VitmoEntry, DateTime>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (VitmoEntry entry, _) => entry.timeStamp,
-        measureFn: (VitmoEntry entry, _) => entry.value,
-        data: data,
-      )
-    ];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +40,6 @@ class EntriesLineChart extends StatelessWidget {
       // should create the same type of [DateTime] as the data provided. If none
       // specified, the default creates local date time.
       dateTimeFactory: const charts.LocalDateTimeFactory(),
-      
     );
 
   }

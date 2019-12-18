@@ -38,10 +38,10 @@ class ImageReader {
           threshold: 0.1,
           asynch: true
         );
-    print('Length${recognitions.length}');
-    print(recognitions.toString());
-    print(recognitions[0]['label']);
-    print(recognitions[0]['confidence']);
+    // print('Length${recognitions.length}');
+    // print(recognitions.toString());
+    // print(recognitions[0]['label']);
+    // print(recognitions[0]['confidence']);
     return recognitions;
   }
 

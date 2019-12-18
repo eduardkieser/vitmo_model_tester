@@ -88,21 +88,25 @@ class RoiFrame extends StatelessWidget {
     bloc.moveFrame(details, frameIndex);
   }
 
+  void checkDelete(DragEndDetails details) {
+    bloc.checkDelete(details, frameIndex);
+  }
+
   void selectFrame() {
     //appState is called for when the order starts to matter.
     bloc.selectFrame(frameIndex);
   }
 
-  String parseValeString(){
+  String parseValeString() {
     List valueList = bloc.frames[frameIndex].currentValue;
     String valueString = '';
-    valueList.forEach((value){
+    valueList.forEach((value) {
       valueString = valueString + '$value ';
     });
     return valueString;
   }
 
-  String parseCertaintyString(){
+  String parseCertaintyString() {
     List<double> certaintyList = bloc.frames[frameIndex].certainty;
     double certainty = certaintyList.reduce(min);
     return certainty.toStringAsFixed(2);
@@ -133,9 +137,8 @@ class RoiFrame extends StatelessWidget {
         },
         child: Container(
           decoration: BoxDecoration(
-            color: tagColor,
-            borderRadius: BorderRadius.all(Radius.circular(5))
-          ),
+              color: tagColor,
+              borderRadius: BorderRadius.all(Radius.circular(5))),
           child: Center(
             child: Text(frameData.label),
           ),
@@ -169,14 +172,13 @@ class RoiFrame extends StatelessWidget {
         child: Container(
           // padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
-            color: tagColor,
-            borderRadius: BorderRadius.all(Radius.circular(5))
-          ),
+              color: tagColor,
+              borderRadius: BorderRadius.all(Radius.circular(5))),
           child: Center(
               child: AutoSizeText(
-                parseValeString(),
-                textAlign: TextAlign.center,
-                )),
+            parseValeString(),
+            textAlign: TextAlign.center,
+          )),
         ),
       ),
     );
@@ -193,8 +195,30 @@ class RoiFrame extends StatelessWidget {
     double _width =
         (frameData.firstCorner.dx - frameData.secondCorner.dx).abs();
 
+    bool _isFarOut;
+    if ((_top < 0) & (_top.abs() > _height / 4)) {
+      _isFarOut = true;
+    } else {
+      _isFarOut = false;
+    }
+
+    Widget _buildDeleteBackground(MultiFrameBlock bloc) {
+      return Container(
+        decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.all(Radius.circular(5))),
+        child: Center(
+          child: Icon(
+            Icons.remove_circle,
+            color: Colors.red,
+            size: 100,
+          ),
+        ),
+      );
+    }
+
     Widget _buildBorderBackground(MultiFrameBlock bloc) {
-      int alpha = bloc.selectedFrameIndex == this.frameIndex?100:50;
+      int alpha = bloc.selectedFrameIndex == this.frameIndex ? 100 : 50;
       RoiFrameModel frameData = bloc.frames[frameIndex];
       if (frameData.isMMM) {
         Color borderColor = Colors.transparent;
@@ -249,8 +273,8 @@ class RoiFrame extends StatelessWidget {
         return Container(
             decoration: BoxDecoration(
                 color: bloc.selectedFrameIndex == this.frameIndex
-                ? Colors.white.withAlpha(100)
-                : Colors.white.withAlpha(50),
+                    ? Colors.white.withAlpha(100)
+                    : Colors.white.withAlpha(50),
                 borderRadius: BorderRadius.all(Radius.circular(5))));
       }
     }
@@ -267,9 +291,14 @@ class RoiFrame extends StatelessWidget {
           onPanUpdate: (DragUpdateDetails details) {
             moveFrame(details: details);
           },
+          onPanEnd: (DragEndDetails details) {
+            checkDelete(details);
+          },
           child: Stack(children: <Widget>[
             // appState.thumbsForDisplay.length>frameIndex? appState.thumbsForDisplay[frameIndex]['img']:
-            _buildBorderBackground(bloc),
+            _isFarOut
+                ? _buildDeleteBackground(bloc)
+                : _buildBorderBackground(bloc),
             latestImage == null
                 ? Container()
                 : Container(
@@ -281,9 +310,11 @@ class RoiFrame extends StatelessWidget {
                       alignment: Alignment.bottomLeft,
                     )),
 
-            Center(
-                child: Text(
-                    "label: ${parseValeString()} \n cartainty:${parseCertaintyString()}")),
+            _isFarOut
+                ? Container()
+                : Center(
+                    child: Text(
+                        "label: ${parseValeString()} \n cartainty:${parseCertaintyString()}")),
           ])),
     );
   }

@@ -3,7 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:path/path.dart';
 import 'dart:ui';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
-
+import 'dart:math';
 
 class ImageConverter{
 
@@ -31,7 +31,6 @@ class ImageConverter{
 
     if (convertCropData['isDemoMode']){
       if (convertCropData['demoImage'] != null){
-        print('injecting demo image into crop pipeline');
         img = convertCropData['demoImage'];
         img = imglib.copyResize(img,height: 1280, width: 720);
         img = imglib.copyRotate(img, -90);
@@ -82,6 +81,22 @@ class ImageConverter{
               int y0 = (frame.firstCorner.dy/screenSize[1] * image.height).round();
               int x1 = (frame.secondCorner.dx/screenSize[0] * image.width).round();
               int y1 = (frame.secondCorner.dy/screenSize[1] * image.height).round();
+
+              int _x0 = min(x0,x1);
+              int _x1 = max(x0,x1);
+              int _y0 = min(y0,y1);
+              int _y1 = max(y0,y1);
+
+              x0 = max(0,_x0);
+              y0 = max(0,_y0);
+              x1 = min(_x1,image.width);
+              y1 = min(_y1,image.height);
+
+              if ((x0==x1) | (y0==y1)){
+                x1 = x1+1;
+                y1 = y1+1;
+              }
+
               imglib.Image imageOut = imglib.copyCrop(image, x0, y0, (x1-x0), (y1-y0));
               imageOut = imglib.copyResize(imageOut, width:48, height:48);
               images.add([imageOut]);
