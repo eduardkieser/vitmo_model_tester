@@ -53,26 +53,16 @@ class Repository {
     );
   }
 
-  Future<Map<String, List<VitmoEntry>>> getParsedEntriesList() async {
+  Future<Map<String, List<Entry>>> getParsedEntriesList() async {
     //print('reading entries');
     List<Entry> entriesList = await getEntries();
     //print('len of entries: ${entriesList.length}');
-    Map<String, List<VitmoEntry>> signalsMap = {};
+    Map<String, List<Entry>> signalsMap = {};
     entriesList.forEach((entry) {
       if (signalsMap.containsKey(entry.label)) {
-        signalsMap[entry.label].add(VitmoEntry(
-            label: entry.label,
-            value: entry.value,
-            certainty: entry.certainty,
-            timeStamp: DateTime.fromMillisecondsSinceEpoch(entry.timeStamp)));
+        signalsMap[entry.label].add(entry);
       } else {
-        signalsMap[entry.label] = [
-          VitmoEntry(
-              label: entry.label,
-              value: entry.value,
-              certainty: entry.certainty,
-              timeStamp: DateTime.fromMillisecondsSinceEpoch(entry.timeStamp))
-        ];
+        signalsMap[entry.label] = [entry];
       }
     });
     if (signalsMap.isEmpty) {
@@ -83,7 +73,7 @@ class Repository {
   }
 
   Future<List<List>> readListListFromRepo() async {
-    Map<String, List<VitmoEntry>> parsedEntries = await getParsedEntriesList();
+    Map<String, List<Entry>> parsedEntries = await getParsedEntriesList();
     List<DateTime> allTimeStamps = [];
     List<String> allColumns = [];
     if (parsedEntries == null) {
@@ -92,7 +82,7 @@ class Repository {
     parsedEntries.forEach((key, listEnty) {
       allColumns.add(key);
       listEnty.forEach((entry) {
-        allTimeStamps.add(entry.timeStamp);
+        allTimeStamps.add(DateTime.fromMillisecondsSinceEpoch(entry.timeStamp));
       });
     });
     allColumns = allColumns.toSet().toList();
@@ -143,12 +133,4 @@ class Repository {
     unawaited(FlutterMailer.send(mailOptions));
     print('should be sent');
   }
-}
-
-class VitmoEntry {
-  int value;
-  DateTime timeStamp;
-  double certainty;
-  String label;
-  VitmoEntry({this.timeStamp, this.label, this.certainty, this.value});
 }

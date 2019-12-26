@@ -1,6 +1,6 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
-import 'package:vitmo_model_tester/data/Repository.dart';
+import 'package:vitmo_model_tester/data/entry_model.dart';
 
 class EntriesLineChart extends StatelessWidget {
   // final Map<String,List<VitmoEntry>> entriesMap;
@@ -11,20 +11,20 @@ class EntriesLineChart extends StatelessWidget {
   //   return EntriesLineChart(seriesList: _createSampleData());
   // }
 
-  factory EntriesLineChart.fromEntriesList(List<VitmoEntry> entriesList) {
+  factory EntriesLineChart.fromEntriesList(List<Entry> entriesList) {
     return EntriesLineChart(seriesList: _parseEntriesList(entriesList));
   }
 
-  static List<charts.Series<VitmoEntry, DateTime>> _parseEntriesList(
-      List<VitmoEntry> entriesList) {
+  static List<charts.Series<Entry, DateTime>> _parseEntriesList(
+      List<Entry> entriesList) {
     return [
-      charts.Series<VitmoEntry, DateTime>(
+      charts.Series<Entry, DateTime>(
           id: 'Sales',
           colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-          domainFn: (VitmoEntry entry, _) => entry.timeStamp,
-          measureFn: (VitmoEntry entry, _) => entry.value,
+          domainFn: (Entry entry, _) => DateTime.fromMillisecondsSinceEpoch(entry.timeStamp),
+          measureFn: (Entry entry, _) => entry.value,
           data: entriesList,
-          measureLowerBoundFn: (VitmoEntry entry, _) => 0)
+          measureLowerBoundFn: (Entry entry, _) => 0)
     ];
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/blocks/SignalsBloc.dart';
-import 'package:vitmo_model_tester/data/Repository.dart';
+import 'package:vitmo_model_tester/data/entry_model.dart';
 import 'package:vitmo_model_tester/widgets/time_series_chart.dart';
 
 class TimeTrace extends StatefulWidget {
@@ -11,7 +11,7 @@ class TimeTrace extends StatefulWidget {
 }
 
 class _TimeTraceState extends State<TimeTrace> {
-  Map<String, List<VitmoEntry>> parsedEntries;
+  Map<String, List<Entry>> parsedEntries;
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _TimeTraceState extends State<TimeTrace> {
     widget.bloc.stopRepositoryReader();
   }
 
-  buildLineChartWithTitle(List<VitmoEntry> entriesList, String title) {
+  buildLineChartWithTitle(List<Entry> entriesList, String title) {
     return Column(
       children: <Widget>[
         Center(child: Text(title)),
@@ -38,7 +38,7 @@ class _TimeTraceState extends State<TimeTrace> {
     );
   }
 
-  buildListOfCharts(Map<String, List<VitmoEntry>> entriesMap) {
+  buildListOfCharts(Map<String, List<Entry>> entriesMap) {
     List<Widget> chartsList = [];
     entriesMap.forEach((k, v) {
       chartsList.add(buildLineChartWithTitle(v, k));
@@ -58,7 +58,7 @@ class _TimeTraceState extends State<TimeTrace> {
           if (snapshot.data != null) {
             // get first element from Map
             var entriesMap = snapshot.data;
-            // List<VitmoEntry> entriesList = entriesMap[entriesMap.keys.cast().toList()[0]];
+            // List<Entry> entriesList = entriesMap[entriesMap.keys.cast().toList()[0]];
             return buildListOfCharts(entriesMap);
           } else {
             return Center(

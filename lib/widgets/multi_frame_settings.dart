@@ -1,4 +1,3 @@
-import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 import 'package:vitmo_model_tester/blocks/SignalsBloc.dart';
@@ -18,7 +17,7 @@ class _MultiFrameSettingsState extends State<MultiFrameSettings> {
   @override
   void initState() {
     super.initState();
-    BackButtonInterceptor.add(myInterceptor);
+    // BackButtonInterceptor.add(myInterceptor);
   }
 
   bool myInterceptor(bool stopDefaultButtonEvent) {
@@ -28,7 +27,7 @@ class _MultiFrameSettingsState extends State<MultiFrameSettings> {
 
   @override
   void dispose() {
-    BackButtonInterceptor.remove(myInterceptor);
+    // BackButtonInterceptor.remove(myInterceptor);
     super.dispose();
   }
 

@@ -1,4 +1,3 @@
-import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 
@@ -17,17 +16,17 @@ class _AddNewFrameState extends State<AddNewFrame> {
   @override
   void initState() {
     super.initState();
-    BackButtonInterceptor.add(myInterceptor);
+    // BackButtonInterceptor.add(myInterceptor);
   }
 
-  bool myInterceptor(bool stopDefaultButtonEvent) {
-    widget.bloc.toggleIsAdding(); // Do some stuff.
-    return true;
-  }
+  // bool myInterceptor(bool stopDefaultButtonEvent) {
+  //   widget.bloc.toggleIsAdding(); // Do some stuff.
+  //   return true;
+  // }
 
   @override
   void dispose() {
-    BackButtonInterceptor.remove(myInterceptor);
+    // BackButtonInterceptor.remove(myInterceptor);
     super.dispose();
   }
 

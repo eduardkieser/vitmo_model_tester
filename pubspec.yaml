@@ -23,22 +23,23 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^0.1.2
-  tflite: ^1.0.2
+ 
   path_provider: ^0.5.0+1
   permission_handler: ^3.2.2
   provider: ^2.0.1
-  camera: ^0.5.2+1
-  image: ^2.1.4
-  fab_dialer: ^0.1.3
-  sqflite: ^1.1.6
-  path: 
-  charts_flutter: ^0.8.0
+  camera: ^0.5.7+2
+  image: ^2.1.4  # if I can find out where to upgrade flutter_test this can be bumped too..
+  # fab_dialer: ^0.1.3
+  sqflite: ^1.2.0
+  path: ^1.6.4
+  charts_flutter: ^0.8.1
   stats: ^0.2.0+3
   auto_size_text: ^2.1.0
   csv: ^4.0.3
-  flutter_email_sender: ^2.0.3
-  flutter_mailer: ^0.4.1+1
-  back_button_interceptor: ^4.2.1
+  flutter_email_sender: ^2.2.1
+  flutter_mailer: ^0.4.2
+  # back_button_interceptor: ^4.2.2
+  tflite: ^1.0.4
   pedantic: ^1.8.0
 
 dev_dependencies:
