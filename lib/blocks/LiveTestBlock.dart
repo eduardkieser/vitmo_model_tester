@@ -195,8 +195,6 @@ class LiveTestBlock {
       resultStreamController.sink.add([res, 'shrug']);
       /*} else {
         var result = await _reader.readImageFromFrame(availableYUV);
-        String confidence = result[0]['confidence'].toString();
-        String label = result[0]['label'].toString();
 
         int p0 = int.parse(result[0]['label']);
         int p1 = int.parse(result[1]['label']);

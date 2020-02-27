@@ -31,7 +31,11 @@ class _AddNewFrameState extends State<AddNewFrame> {
   }
 
   Widget _buildDropDownLabelsList() {
-    List<String> labelOptions = ['HR', 'ABP', 'SpO2', 'Temp', 'RespRate'];
+    List<String> labelOptions = ['HR', 'ABP', 'SpO2', 'Temp', 'RespRate','x','y','z'];
+    widget.bloc.frames.forEach((frame){
+      labelOptions.remove(frame.label);
+    });
+
     List dropDownItems =
         labelOptions.map<DropdownMenuItem<String>>((String value) {
       return DropdownMenuItem<String>(
@@ -46,7 +50,6 @@ class _AddNewFrameState extends State<AddNewFrame> {
         onChanged: (String newValue) {
           widget.bloc.frameAddingWidgetCurrentLabel = newValue;
           widget.bloc.isAddingNewFrameStreamController.add(true);
-          // bloc.frameController.add(bloc);
           print('chose new value $newValue');
         },
         items: dropDownItems);

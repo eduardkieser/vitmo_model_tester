@@ -14,6 +14,7 @@ import 'package:vitmo_model_tester/models/roi_frame_model.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
 
+
 class MultiFrameBlock {
   MultiFrameBlock(this.model) {
     prepReader(model);
@@ -25,7 +26,7 @@ class MultiFrameBlock {
   List<RoiFrameModel> frames = [
     RoiFrameModel(firstCorner: Offset(50.0, 50.0), label: 'HR'),
     RoiFrameModel(firstCorner: Offset(320.0, 50.0), label: 'ABP'),
-    RoiFrameModel(firstCorner: Offset(50.0, 300.0), label: 'RespR'),
+    RoiFrameModel(firstCorner: Offset(50.0, 300.0), label: 'RespRate'),
   ];
   int _selectedFrameIndex;
   double zoomScale = 1.0;
@@ -184,7 +185,7 @@ class MultiFrameBlock {
   void addNewFrame(bool isMMM) {
     String label = frameAddingWidgetCurrentLabel;
     if (label == null) {
-      label = "X";
+      return;
     }
     frames.add(RoiFrameModel(
         firstCorner: Offset(50.0, 50.0), label: label, isMMM: isMMM));
@@ -205,8 +206,8 @@ class MultiFrameBlock {
     if (frames.length - 1 < _selectedFrameIndex) {
       _selectedFrameIndex = frames.length - 1;
     }
-    croppedImages.removeAt(selectedFrameIndex);
-    frames.removeAt(selectedFrameIndex);
+    if (croppedImages !=null){croppedImages.removeAt(selectedFrameIndex);}
+    if (frames!=null){frames.removeAt(selectedFrameIndex);}
     frameController.sink.add(this);
   }
 
