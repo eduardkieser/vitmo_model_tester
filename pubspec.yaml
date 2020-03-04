@@ -62,7 +62,7 @@ flutter:
    - assets/dragon_mini_32_48_95.tflite
    - assets/dragon_mini_32_48_97.tflite
    - assets/dragon_labels_33.txt
-   - assets/hardie_01.tflite
+#   - assets/hardie_01.tflite
    - assets/hardie_02_48_99.tflite
    - assets/ed_97_48_1.tflite
    - assets/Resnet_20.tflite
