@@ -1,9 +1,8 @@
-import 'package:image/image.dart' as imglib;
-import 'package:camera/camera.dart';
-import 'package:path/path.dart';
-import 'dart:ui';
-import 'package:vitmo_model_tester/models/roi_frame_model.dart';
 import 'dart:math';
+
+import 'package:camera/camera.dart';
+import 'package:image/image.dart' as imglib;
+import 'package:vitmo_model_tester/models/roi_frame_model.dart';
 
 class ImageConverter {
   static Future<List<List<imglib.Image>>> convertCopyRotateSetFast(
@@ -194,7 +193,7 @@ class ImageConverter {
         }
       }
 
-      imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
+      imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0, filter: 0);
       List<int> png = pngEncoder.encodeImage(img);
       // muteYUVProcessing = false;
       return png;
@@ -288,11 +287,11 @@ class ImageConverter {
     return null;
   }
 
-  static Future<CameraImage> cropCameraFrame(CameraImage image) {
+  /*static Future<CameraImage> cropCameraFrame(CameraImage image) {
     final int width = image.width;
     final int height = image.height;
     final Offset topLeft = Offset(.25 * width.floor(), .25 * height.floor());
     final Offset bottomRight =
         Offset(.25 * width.floor(), .25 * height.floor());
-  }
+  }*/
 }

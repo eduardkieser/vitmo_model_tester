@@ -1,13 +1,15 @@
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'dart:async';
-import 'package:path/path.dart';
-import 'package:tflite/tflite.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'models/model_data.dart';
-import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
+import 'dart:io';
+
 import 'package:image/image.dart' as imglib;
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:stats/stats.dart';
+import 'package:tflite/tflite.dart';
+import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
+
+import 'models/model_data.dart';
 
 class DataBuilder {
   Future<Map<String, String>> getTestingData(
@@ -87,8 +89,8 @@ class ModelTester {
     Stream<List<PerformanceData>> resultsStream,
   }) async {
     isTesting = true;
-    int countTrue = 0;
-    int countFalse = 0;
+    //int countTrue = 0;
+    //int countFalse = 0;
     int oneIfTrue = 0;
 
     print('#################### mean:$imgMean ###########################');
@@ -125,7 +127,7 @@ class ModelTester {
         continue;
       }
 
-      if (recognitions.length > 0) {
+      if (recognitions.isNotEmpty) {
         int p0 = int.parse(recognitions[0]['label']);
         int p1 = int.parse(recognitions[1]['label']);
         int p2 = int.parse(recognitions[2]['label']);
@@ -133,10 +135,10 @@ class ModelTester {
         String result = intRes.toString();
         // String result = recognitions[0]['label'];
         if (result == trueLabel) {
-          countTrue++;
+          //countTrue++;
           oneIfTrue = 1;
         } else {
-          countFalse++;
+          //countFalse++;
           oneIfTrue = 0;
         }
 

@@ -1,20 +1,24 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
-import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 import 'package:image/image.dart' as imglib;
+import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
+
 import '../models/roi_frame_model.dart';
+
+class RoiData {
+  List<int> latestImage;
+  Color tagColor;
+  List<Color> backgroundColors;
+}
 
 class RoiFrame extends StatelessWidget {
   final MultiFrameBlock bloc;
   final int frameIndex;
   RoiFrame({this.bloc, this.frameIndex});
 
-  List<int> latestImage;
-  Color tagColor;
-  List<Color> backgroundColors;
-
-  void getLatestImage() {
+  void getLatestImage(RoiData roiData) {
     if (!bloc.showActualCroppedFrames) {
       return;
     }
@@ -27,33 +31,33 @@ class RoiFrame extends StatelessWidget {
 
     try {
       imglib.Image img = bloc.croppedImages[frameIndex].last;
-      latestImage = bloc.pngEncoder.encodeImage(img);
+      roiData.latestImage = bloc.pngEncoder.encodeImage(img);
     } on Error {
       print('something went wrong');
     }
   }
 
-  setTagColorFromCertainty() {
+  setTagColorFromCertainty(RoiData roiData) {
     if (!bloc.isRecording) {
-      tagColor = Colors.blue;
+      roiData.tagColor = Colors.blue;
       return;
     }
     num certainty = bloc.frames[frameIndex].certainty.reduce(min);
     if (certainty > 0.98) {
-      tagColor = Colors.green;
+      roiData.tagColor = Colors.green;
       return;
     }
     if (certainty > 0.8) {
-      tagColor = Colors.yellow;
+      roiData.tagColor = Colors.yellow;
       return;
     } else {
-      tagColor = Colors.red;
+      roiData.tagColor = Colors.red;
       return;
     }
   }
 
-  setBackgroundColorsFromCertainty() {
-    backgroundColors = [Colors.white, Colors.white, Colors.white];
+  setBackgroundColorsFromCertainty(RoiData roiData) {
+    roiData.backgroundColors = [Colors.white, Colors.white, Colors.white];
     List<num> certainties = bloc.frames[frameIndex].certainty;
     if (certainties.length == 1) {
       return;
@@ -63,14 +67,14 @@ class RoiFrame extends StatelessWidget {
     }
     for (var i = 0; i < certainties.length; i++) {
       if (certainties[i] > 0.98) {
-        backgroundColors[i] = Colors.green;
+        roiData.backgroundColors[i] = Colors.green;
         continue;
       }
       if (certainties[i] > 0.8) {
-        backgroundColors[i] = Colors.yellow;
+        roiData.backgroundColors[i] = Colors.yellow;
         continue;
       } else {
-        backgroundColors[i] = Colors.red;
+        roiData.backgroundColors[i] = Colors.red;
         continue;
       }
     }
@@ -112,7 +116,7 @@ class RoiFrame extends StatelessWidget {
     return certainty.toStringAsFixed(2);
   }
 
-  Widget _buildFirstTag(MultiFrameBlock bloc) {
+  Widget _buildFirstTag(MultiFrameBlock bloc, RoiData roiData) {
     RoiFrameModel frameData = bloc.frames[frameIndex];
     bool _isTop = frameData.firstCorner.dy < frameData.secondCorner.dy;
     bool _isLeft = frameData.firstCorner.dx < frameData.secondCorner.dx;
@@ -137,7 +141,7 @@ class RoiFrame extends StatelessWidget {
         },
         child: Container(
           decoration: BoxDecoration(
-              color: tagColor,
+              color: roiData.tagColor,
               borderRadius: BorderRadius.all(Radius.circular(5))),
           child: Center(
             child: Text(frameData.label),
@@ -147,7 +151,7 @@ class RoiFrame extends StatelessWidget {
     );
   }
 
-  Widget _buildSecondTag(MultiFrameBlock bloc) {
+  Widget _buildSecondTag(MultiFrameBlock bloc, RoiData roiData) {
     RoiFrameModel frameData = bloc.frames[frameIndex];
     bool _isTop = frameData.firstCorner.dy > frameData.secondCorner.dy;
     bool _isLeft = frameData.firstCorner.dx > frameData.secondCorner.dx;
@@ -172,7 +176,7 @@ class RoiFrame extends StatelessWidget {
         child: Container(
           // padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
-              color: tagColor,
+              color: roiData.tagColor,
               borderRadius: BorderRadius.all(Radius.circular(5))),
           child: Center(
               child: AutoSizeText(
@@ -184,7 +188,7 @@ class RoiFrame extends StatelessWidget {
     );
   }
 
-  Widget _buildBorder(MultiFrameBlock bloc) {
+  Widget _buildBorder(MultiFrameBlock bloc, RoiData roiData) {
     RoiFrameModel frameData = bloc.frames[frameIndex];
     double _top =
         [frameData.firstCorner.dy, frameData.secondCorner.dy].reduce(min);
@@ -233,7 +237,7 @@ class RoiFrame extends StatelessWidget {
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: backgroundColors[0].withAlpha(alpha),
+                      color: roiData.backgroundColors[0].withAlpha(alpha),
                       border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
@@ -247,7 +251,7 @@ class RoiFrame extends StatelessWidget {
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: backgroundColors[1].withAlpha(alpha),
+                      color: roiData.backgroundColors[1].withAlpha(alpha),
                       border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
@@ -261,7 +265,7 @@ class RoiFrame extends StatelessWidget {
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
-                      color: backgroundColors[2].withAlpha(alpha),
+                      color: roiData.backgroundColors[2].withAlpha(alpha),
                       border: Border.all(color: borderColor),
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
@@ -299,12 +303,12 @@ class RoiFrame extends StatelessWidget {
             _isFarOut
                 ? _buildDeleteBackground(bloc)
                 : _buildBorderBackground(bloc),
-            latestImage == null
+            roiData.latestImage == null
                 ? Container()
                 : Container(
                     alignment: Alignment.bottomLeft,
                     child: Image.memory(
-                      latestImage,
+                      roiData.latestImage,
                       width: _width,
                       height: _height,
                       alignment: Alignment.bottomLeft,
@@ -319,20 +323,21 @@ class RoiFrame extends StatelessWidget {
     );
   }
 
-  Widget _buildFrame(MultiFrameBlock bloc) {
-    getLatestImage();
+  Widget _buildFrame(MultiFrameBlock bloc, RoiData roiData) {
+    getLatestImage(roiData);
     return Stack(children: <Widget>[
-      _buildBorder(bloc),
-      _buildFirstTag(bloc),
-      _buildSecondTag(bloc),
+      _buildBorder(bloc, roiData),
+      _buildFirstTag(bloc, roiData),
+      _buildSecondTag(bloc, roiData),
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    setTagColorFromCertainty();
-    setBackgroundColorsFromCertainty();
-    return _buildFrame(bloc);
+    RoiData roiData = RoiData();
+    setTagColorFromCertainty(roiData);
+    setBackgroundColorsFromCertainty(roiData);
+    return _buildFrame(bloc, roiData);
     //
   }
 }

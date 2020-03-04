@@ -64,14 +64,14 @@ flutter:
    - assets/dragon_mini_32_48_97.tflite
    - assets/dragon_labels_33.txt
 #   - assets/hardie_01.tflite
-   - assets/hardie_02_48_99.tflite
-   - assets/ed_97_48_1.tflite
+#   - assets/hardie_02_48_99.tflite
+#   - assets/ed_97_48_1.tflite
    - assets/Resnet_20.tflite
-   - assets/Resnet20_0_to_20.tflite
+#   - assets/Resnet20_0_to_20.tflite
    - assets/Resnet20_BatchFirst.tflite
-   - assets/images/IMG_01.png
-   - assets/images/IMG_02.png
-   - assets/images/IMG_03.png
-   - assets/images/IMG_04.png
-   - assets/images/IMG_05.png
-   - assets/images/IMG_06.png
+#   - assets/images/IMG_01.png
+#   - assets/images/IMG_02.png
+#   - assets/images/IMG_03.png
+#   - assets/images/IMG_04.png
+#   - assets/images/IMG_05.png
+#   - assets/images/IMG_06.png

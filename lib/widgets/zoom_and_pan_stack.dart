@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
+
 import 'package:camera/camera.dart';
-import './../widgets/roi_frame.dart';
+import 'package:flutter/material.dart';
+import 'package:vitmo_model_tester/widgets/add_new_roi.dart';
+
 import './../blocks/MultiFrameBlock.dart';
 import './../models/roi_frame_model.dart';
-import 'package:vitmo_model_tester/widgets/add_new_roi.dart';
+import './../widgets/roi_frame.dart';
 import 'multi_frame_settings.dart';
 
 class ZoomAndPanStack extends StatefulWidget {
@@ -217,7 +219,7 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
                 color: Colors.white,
                 size: 30.0,
               ),
-              shape: new CircleBorder(),
+              shape: CircleBorder(),
               elevation: 2.0,
               fillColor: Colors.blue,
               padding: const EdgeInsets.all(15.0),
@@ -244,7 +246,7 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
                 color: Colors.white,
                 size: 30.0,
               ),
-              shape: new CircleBorder(),
+              shape: CircleBorder(),
               elevation: 2.0,
               fillColor: bloc.isRecording ? Colors.red : Colors.blue,
               padding: const EdgeInsets.all(15.0),
@@ -265,7 +267,7 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
                 color: Colors.white,
                 size: 30.0,
               ),
-              shape: new CircleBorder(),
+              shape: CircleBorder(),
               elevation: 2.0,
               fillColor: Colors.blue,
               padding: const EdgeInsets.all(15.0),

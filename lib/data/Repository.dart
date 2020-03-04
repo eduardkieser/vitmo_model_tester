@@ -1,12 +1,12 @@
-import 'package:flutter/cupertino.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:vitmo_model_tester/data/entry_model.dart';
-import 'package:csv/csv.dart';
 import 'dart:io';
-// import 'package:flutter_email_sender/flutter_email_sender.dart';
+
+import 'package:csv/csv.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pedantic/pedantic.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:vitmo_model_tester/data/entry_model.dart';
 
 class Repository {
   Future<Database> getDataBase() async {
@@ -75,7 +75,7 @@ class Repository {
         ];
       }
     });
-    if (signalsMap.length == 0) {
+    if (signalsMap.isEmpty) {
       return null;
     } else {
       return signalsMap;
@@ -128,21 +128,20 @@ class Repository {
     Directory tempDir = await getTemporaryDirectory();
     String filename = '${tempDir.path}/VitmoData.csv';
 
-    File(filename).writeAsString(csv).then((File file) {
-      print('created csv file');
-      final MailOptions mailOptions = MailOptions(
-        body: 'VitmoData is attached',
-        subject: 'VitmoDataDump',
-        recipients: ['eduard.kieser@gmail.com'],
-        isHTML: false,
-        bccRecipients: [],
-        ccRecipients: [],
-        attachments: [filename],
-      );
-      print('trying to send');
-      FlutterMailer.send(mailOptions);
-      print('should be sent');
-    });
+    await File(filename).writeAsString(csv);
+    print('created csv file');
+    final MailOptions mailOptions = MailOptions(
+      body: 'VitmoData is attached',
+      subject: 'VitmoDataDump',
+      recipients: ['eduard.kieser@gmail.com'],
+      isHTML: false,
+      bccRecipients: [],
+      ccRecipients: [],
+      attachments: [filename],
+    );
+    print('trying to send');
+    unawaited(FlutterMailer.send(mailOptions));
+    print('should be sent');
   }
 }
 

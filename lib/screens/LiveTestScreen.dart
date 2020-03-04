@@ -1,15 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/blocks/LiveTestBlock.dart';
-import 'package:camera/camera.dart';
-import 'dart:async';
-import 'package:image/image.dart' as imglib;
 import 'package:vitmo_model_tester/widgets/roi_frame_tester.dart';
 
 class LiveTestScreen extends StatefulWidget {
-  // CameraDescription firstCamera;
-  LiveTestBlock bloc;
+  // final CameraDescription firstCamera;
+  final LiveTestBlock bloc;
   LiveTestScreen({Key key, this.bloc}) : super(key: key);
   _LiveTestScreenState createState() => _LiveTestScreenState();
 }
@@ -29,6 +27,7 @@ class _LiveTestScreenState extends State<LiveTestScreen> {
     widget.bloc.convertedImageStreamController.close();
     widget.bloc.resultStreamController.close();
     widget.bloc.frameController.close();
+    super.dispose();
   }
 
   @override
@@ -94,7 +93,7 @@ class _LiveTestScreenState extends State<LiveTestScreen> {
     );
   }
 
-  _buildPreviewWindow() {
+  /*_buildPreviewWindow() {
     return StreamBuilder(
         stream: widget.bloc.cameraIsInitializedStreamController.stream,
         initialData: false,
@@ -115,7 +114,7 @@ class _LiveTestScreenState extends State<LiveTestScreen> {
             return Center(child: CircularProgressIndicator());
           }
         });
-  }
+  }*/
 
   Widget _returnButton() {
     return FlatButton(

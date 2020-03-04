@@ -1,14 +1,11 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
-import 'dart:io';
-import 'package:camera/camera.dart';
-import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:vitmo_model_tester/screens/SignalsScreen.dart';
+import 'package:flutter/material.dart';
+import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 import 'package:vitmo_model_tester/blocks/SignalsBloc.dart';
+import 'package:vitmo_model_tester/screens/SignalsScreen.dart';
 
 class MultiFrameSettings extends StatefulWidget {
-  MultiFrameBlock _bloc;
+  final MultiFrameBlock _bloc;
   MultiFrameSettings(this._bloc);
   @override
   _MultiFrameSettingsState createState() => _MultiFrameSettingsState();

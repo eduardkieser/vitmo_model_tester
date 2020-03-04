@@ -1,6 +1,7 @@
-import 'package:vitmo_model_tester/models/model_data.dart';
 import 'dart:async';
+
 import 'package:vitmo_model_tester/model_tester.dart';
+import 'package:vitmo_model_tester/models/model_data.dart';
 
 class StaticTestBloc {
   List<int> _binaryResults = [];

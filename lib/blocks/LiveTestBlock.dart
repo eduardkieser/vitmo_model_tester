@@ -1,23 +1,19 @@
 import 'dart:async';
 import 'dart:typed_data';
+
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as imglib;
 import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
-import 'package:vitmo_model_tester/model_tester.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
-import 'package:vitmo_model_tester/utils/image_reader_stat.dart' as stat;
-import 'package:flutter/scheduler.dart';
-import 'package:image/image.dart' as imglib;
-import 'package:tflite/tflite.dart';
-import 'package:vitmo_model_tester/models/roi_frame_model.dart';
 
 class LiveTestBlock {
   ModelData model;
   ImageReader _reader;
-  imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
+  imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0, filter: 0);
 
   List<RoiFrameModel> frames = [RoiFrameModel()];
 
@@ -43,7 +39,6 @@ class LiveTestBlock {
   StreamController<LiveTestBlock> frameController =
       StreamController.broadcast();
 
-  @override
   dispose() {
     cameraImageStreamController.close();
     cameraIsInitializedStreamController.close();
@@ -166,39 +161,39 @@ class LiveTestBlock {
   }
 
   Future<void> startImageStream() async {
-    cameraController.startImageStream((CameraImage availableYUV) async {
+    return cameraController.startImageStream((CameraImage availableYUV) async {
       if (!_isDoneConvertingImage) return;
       // print(_isDoneConvertingImage);
       _isDoneConvertingImage = false;
       // either use one or the other processing pipeline
       print(
           'first corner: ${frames[0].firstCorner} second corner: ${frames[0].secondCorner}');
-      if (true) {
-        print('starting compute set');
-        imglib.Image image = await compute(
-            ImageConverter.convertYUV420toImageFast, availableYUV);
-        Map<String, dynamic> cropData = {
-          'image': image,
-          'frames': frames,
-          'screenSize': [frameWidth, frameHeight]
-        };
-        imglib.Image croppedImage =
-            await compute(ImageConverter.cropRotate, cropData);
-        List<int> imgForDisplay =
-            await compute(ImageConverter.encodePng, croppedImage);
+      //if (true) {
+      print('starting compute set');
+      imglib.Image image =
+          await compute(ImageConverter.convertYUV420toImageFast, availableYUV);
+      Map<String, dynamic> cropData = {
+        'image': image,
+        'frames': frames,
+        'screenSize': [frameWidth, frameHeight]
+      };
+      imglib.Image croppedImage =
+          await compute(ImageConverter.cropRotate, cropData);
+      List<int> imgForDisplay =
+          await compute(ImageConverter.encodePng, croppedImage);
 
-        var result = await _reader.readImageFromBinary(croppedImage);
-        // // var intImg = _reader.imageToByteListUint8(image, model.imgSize);
-        int p0 = int.parse(result[0]['label']);
-        int p1 = int.parse(result[1]['label']);
-        int p2 = int.parse(result[2]['label']);
+      var result = await _reader.readImageFromBinary(croppedImage);
+      // // var intImg = _reader.imageToByteListUint8(image, model.imgSize);
+      int p0 = int.parse(result[0]['label']);
+      int p1 = int.parse(result[1]['label']);
+      int p2 = int.parse(result[2]['label']);
 
-        int intRes = p0 + p1 + p2;
-        String res = intRes.toString();
+      int intRes = p0 + p1 + p2;
+      String res = intRes.toString();
 
-        convertedImageStreamController.sink.add(imgForDisplay);
-        resultStreamController.sink.add([res, 'shrug']);
-      } else {
+      convertedImageStreamController.sink.add(imgForDisplay);
+      resultStreamController.sink.add([res, 'shrug']);
+      /*} else {
         var result = await _reader.readImageFromFrame(availableYUV);
         String confidence = result[0]['confidence'].toString();
         String label = result[0]['label'].toString();
@@ -211,7 +206,7 @@ class LiveTestBlock {
         String res = intRes.toString();
 
         resultStreamController.sink.add([res, 'shrug']);
-      }
+      }*/
       print('converted image ${_frameNumber += 1}');
       _isDoneConvertingImage = true;
     });

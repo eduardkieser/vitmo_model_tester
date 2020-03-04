@@ -1,23 +1,18 @@
 import 'dart:async';
-import 'dart:async' as prefix0;
+import 'dart:math';
 import 'dart:typed_data';
+
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart';
+import 'package:image/image.dart' as imglib;
+import 'package:vitmo_model_tester/data/Repository.dart';
 import 'package:vitmo_model_tester/data/entry_model.dart';
 import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
-import 'package:vitmo_model_tester/screens/LiveTestScreen.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
-import 'package:image/image.dart' as imglib;
-import 'dart:math';
-import 'package:vitmo_model_tester/data/Repository.dart';
-import 'package:vitmo_model_tester/screens/SignalsScreen.dart';
-import 'package:vitmo_model_tester/screens/TimeSeriesChartExample.dart';
-import 'dart:io';
 
 class MultiFrameBlock {
   MultiFrameBlock(this.model) {
@@ -26,7 +21,7 @@ class MultiFrameBlock {
   }
   ModelData model;
   ImageReader _reader;
-  imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
+  imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0, filter: 0);
   List<RoiFrameModel> frames = [
     RoiFrameModel(firstCorner: Offset(50.0, 50.0), label: 'HR'),
     RoiFrameModel(firstCorner: Offset(320.0, 50.0), label: 'ABP'),
@@ -284,7 +279,7 @@ class MultiFrameBlock {
   }
 
   storeSnapshotToDb() {
-    if (frames.length == 0) {
+    if (frames.isEmpty) {
       return;
     }
     int timeStamp = DateTime.now().millisecondsSinceEpoch;
@@ -353,7 +348,7 @@ class MultiFrameBlock {
       }
     }
 
-    cameraController.startImageStream((CameraImage availableYUV) async {
+    await cameraController.startImageStream((CameraImage availableYUV) async {
       if (!_isDoneConvertingImage) return;
       _isDoneConvertingImage = false;
       Map<String, dynamic> cropData = {

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'screens/StaticTestScreen.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 
-import 'dart:io';
-import 'dart:async';
-import 'model_tester.dart';
+import 'screens/StaticTestScreen.dart';
 
 void main() => runApp(MyApp());
 

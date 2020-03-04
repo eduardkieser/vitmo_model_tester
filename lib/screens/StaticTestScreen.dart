@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
-import 'package:vitmo_model_tester/models/model_data.dart';
-import 'package:vitmo_model_tester/model_tester.dart';
-import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
-import 'package:provider/provider.dart';
-import 'package:vitmo_model_tester/screens/LiveTestScreen.dart';
-import 'package:camera/camera.dart';
 import 'package:vitmo_model_tester/blocks/LiveTestBlock.dart';
+import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
+import 'package:vitmo_model_tester/blocks/StaticTestBlock.dart';
+import 'package:vitmo_model_tester/model_tester.dart';
+import 'package:vitmo_model_tester/models/model_data.dart';
+import 'package:vitmo_model_tester/screens/LiveTestScreen.dart';
 import 'package:vitmo_model_tester/screens/MultiFrameScreen.dart';
 
 class StaticTestScreen extends StatefulWidget {

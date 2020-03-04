@@ -26,7 +26,7 @@ class PerformanceData {
 }
 
 class AppState with ChangeNotifier {
-  int _trueCount = 0;
+  /*int _trueCount = 0;
   int _falseCount = 0;
 
   void incTrue() {
@@ -38,4 +38,5 @@ class AppState with ChangeNotifier {
     ++_falseCount;
     notifyListeners();
   }
+   */
 }

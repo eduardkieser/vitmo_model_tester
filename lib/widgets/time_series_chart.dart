@@ -1,7 +1,6 @@
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/data/Repository.dart';
-import 'package:vitmo_model_tester/data/entry_model.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 class EntriesLineChart extends StatelessWidget {
   // final Map<String,List<VitmoEntry>> entriesMap;
@@ -19,7 +18,7 @@ class EntriesLineChart extends StatelessWidget {
   static List<charts.Series<VitmoEntry, DateTime>> _parseEntriesList(
       List<VitmoEntry> entriesList) {
     return [
-      new charts.Series<VitmoEntry, DateTime>(
+      charts.Series<VitmoEntry, DateTime>(
           id: 'Sales',
           colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
           domainFn: (VitmoEntry entry, _) => entry.timeStamp,
@@ -31,7 +30,7 @@ class EntriesLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new charts.TimeSeriesChart(
+    return charts.TimeSeriesChart(
       seriesList,
       animate: true,
       // Optionally pass in a [DateTimeFactory] used by the chart. The factory

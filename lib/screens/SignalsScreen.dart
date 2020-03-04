@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:vitmo_model_tester/data/Repository.dart';
-import 'package:vitmo_model_tester/data/entry_model.dart';
-import 'package:vitmo_model_tester/widgets/time_series_chart.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:vitmo_model_tester/blocks/SignalsBloc.dart';
+import 'package:vitmo_model_tester/data/Repository.dart';
+import 'package:vitmo_model_tester/widgets/time_series_chart.dart';
 
 class TimeTrace extends StatefulWidget {
-  SignalsBloc bloc;
+  final SignalsBloc bloc;
   TimeTrace({Key key, this.bloc}) : super(key: key);
 
   _TimeTraceState createState() => _TimeTraceState();
