@@ -22,9 +22,8 @@ class roiFrame {
 class _LiveTestScreenState extends State<LiveTestScreen> {
   bool cameraIsReady = false;
 
-
   @override
-  dispose(){
+  dispose() {
     widget.bloc.cameraImageStreamController.close();
     widget.bloc.cameraIsInitializedStreamController.close();
     widget.bloc.convertedImageStreamController.close();
@@ -67,29 +66,30 @@ class _LiveTestScreenState extends State<LiveTestScreen> {
                 })),
         Positioned(
             child: StreamBuilder(
-              stream: widget.bloc.cameraIsInitializedStreamController.stream,
-              initialData: false,
-              builder: (context,snapshot1){
-                if (snapshot1.data){
-                  return StreamBuilder(
-                    stream: widget.bloc.frameController.stream,
-                    initialData: widget.bloc,
-                    builder: (context, snapshot) {
-                      double _previewWidth = MediaQuery.of(context).size.width;
-                      double _previewHeight = _previewWidth /
-                          widget.bloc.cameraController.value.aspectRatio;
-                      widget.bloc.setFrameSize(_previewWidth, _previewHeight);
-                      return Container(
-                        child: RoiFrame(block: widget.bloc),
-                        width: _previewWidth,
-                        height: _previewHeight,
-                      );
-                    },
+          stream: widget.bloc.cameraIsInitializedStreamController.stream,
+          initialData: false,
+          builder: (context, snapshot1) {
+            if (snapshot1.data) {
+              return StreamBuilder(
+                stream: widget.bloc.frameController.stream,
+                initialData: widget.bloc,
+                builder: (context, snapshot) {
+                  double _previewWidth = MediaQuery.of(context).size.width;
+                  double _previewHeight = _previewWidth /
+                      widget.bloc.cameraController.value.aspectRatio;
+                  widget.bloc.setFrameSize(_previewWidth, _previewHeight);
+                  return Container(
+                    child: RoiFrame(block: widget.bloc),
+                    width: _previewWidth,
+                    height: _previewHeight,
                   );
-                } else {return Center(child: CircularProgressIndicator());}
-              },
-            )
-                )
+                },
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
+        ))
       ],
     );
   }

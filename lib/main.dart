@@ -8,7 +8,6 @@ import 'dart:io';
 import 'dart:async';
 import 'model_tester.dart';
 
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -17,19 +16,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   // @override
   // void initState() async {
   //   super.initState();
   // }
 
-
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-      ]);
+      DeviceOrientation.portraitUp,
+    ]);
 
     SystemChrome.setEnabledSystemUIOverlays([]);
 

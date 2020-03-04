@@ -12,24 +12,24 @@ class MultiFrameScreen extends StatefulWidget {
 }
 
 class _MultiFrameScreenState extends State<MultiFrameScreen> {
-
-  @override void initState() {
+  @override
+  void initState() {
     super.initState();
     widget.bloc.prepCamera();
     widget.bloc.addListeners();
   }
 
-    @override
-    void dispose(){
-      widget.bloc.dispose();
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      super.dispose();
-    }
+  @override
+  void dispose() {
+    widget.bloc.dispose();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ZoomAndPanStack(bloc:widget.bloc),
+      body: ZoomAndPanStack(bloc: widget.bloc),
     );
   }
 }

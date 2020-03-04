@@ -32,12 +32,8 @@ class ImageReader {
   Future readImageFromBinary(imglib.Image image) async {
     Uint8List binaryData = imageToByteListFloat32(
         image, model.imgSize, model.imgMean, model.imgStd);
-        var recognitions = await Tflite.runModelOnBinary(
-          binary: binaryData,
-          numResults: 3,
-          threshold: 0.1,
-          asynch: true
-        );
+    var recognitions = await Tflite.runModelOnBinary(
+        binary: binaryData, numResults: 3, threshold: 0.1, asynch: true);
     // print('Length${recognitions.length}');
     // print(recognitions.toString());
     // print(recognitions[0]['label']);

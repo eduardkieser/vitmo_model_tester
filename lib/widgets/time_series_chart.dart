@@ -6,33 +6,31 @@ import 'package:charts_flutter/flutter.dart' as charts;
 class EntriesLineChart extends StatelessWidget {
   // final Map<String,List<VitmoEntry>> entriesMap;
   final List<charts.Series> seriesList;
-  const EntriesLineChart({Key key,this.seriesList});
+  const EntriesLineChart({Key key, this.seriesList});
 
   // factory EntriesLineChart.withSampleData(){
   //   return EntriesLineChart(seriesList: _createSampleData());
   // }
 
-  factory EntriesLineChart.fromEntriesList(List<VitmoEntry> entriesList){
+  factory EntriesLineChart.fromEntriesList(List<VitmoEntry> entriesList) {
     return EntriesLineChart(seriesList: _parseEntriesList(entriesList));
   }
 
-  static List<charts.Series<VitmoEntry, DateTime>> _parseEntriesList(List<VitmoEntry> entriesList) {
+  static List<charts.Series<VitmoEntry, DateTime>> _parseEntriesList(
+      List<VitmoEntry> entriesList) {
     return [
       new charts.Series<VitmoEntry, DateTime>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (VitmoEntry entry, _) => entry.timeStamp,
-        measureFn: (VitmoEntry entry, _) => entry.value,
-        data: entriesList,
-        measureLowerBoundFn: (VitmoEntry entry,_) => 0
-      )
+          id: 'Sales',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          domainFn: (VitmoEntry entry, _) => entry.timeStamp,
+          measureFn: (VitmoEntry entry, _) => entry.value,
+          data: entriesList,
+          measureLowerBoundFn: (VitmoEntry entry, _) => 0)
     ];
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return new charts.TimeSeriesChart(
       seriesList,
       animate: true,
@@ -41,6 +39,5 @@ class EntriesLineChart extends StatelessWidget {
       // specified, the default creates local date time.
       dateTimeFactory: const charts.LocalDateTimeFactory(),
     );
-
   }
 }

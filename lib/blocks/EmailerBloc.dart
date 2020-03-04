@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 
+class Emailer {
+  startMailerTimer() {}
 
-class Emailer{
-  startMailerTimer(){
-
-  }
-
-  sendMail(){
-    
-  }
+  sendMail() {}
 }

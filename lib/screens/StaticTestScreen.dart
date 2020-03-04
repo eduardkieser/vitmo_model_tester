@@ -28,7 +28,7 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
   int _modelIndex = 0;
   double _selectedMean = 100;
   double _selectedStd = 155;
-  
+
   List<ModelData> models = [
     // ModelData(
     //     model: 'assets/dragon_mini_16_48_86.tflite',
@@ -64,7 +64,7 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
         model: 'assets/Resnet_20.tflite',
         labels: "assets/dragon_labels_33.txt",
         dataPath: 'VitmoModelTester/data',
-        imgSize:48),
+        imgSize: 48),
     // ModelData(
     //     model: 'assets/Resnet20_0_to_20.tflite',
     //     labels: "assets/dragon_labels_33.txt",
@@ -110,33 +110,31 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
   //   );
   // }
 
-  Widget _accResults(){
+  Widget _accResults() {
     return StreamBuilder<double>(
       stream: _block.intStream,
       initialData: 0,
-      builder: (BuildContext context, AsyncSnapshot<double> snapshot){
+      builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
         return Container(
-          alignment: Alignment.center,
-          child: Text('mean accuracy!            ${snapshot.data.toStringAsFixed(5)}',
-          style: TextStyle(
-            fontSize: 20
-          )));
+            alignment: Alignment.center,
+            child: Text(
+                'mean accuracy!            ${snapshot.data.toStringAsFixed(5)}',
+                style: TextStyle(fontSize: 20)));
       },
     );
   }
 
-  Widget _durResults(){
+  Widget _durResults() {
     return StreamBuilder<double>(
       stream: _block.durationStream,
       initialData: 0,
-      builder: (BuildContext context, AsyncSnapshot<double> snapshot){
+      builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
         return Container(
-          alignment: Alignment.center,
-          child: Text('mean recognition time ${snapshot.data.toStringAsFixed(5)}',
-          style: TextStyle(
-            fontSize: 20
-          ),
-          ));
+            alignment: Alignment.center,
+            child: Text(
+              'mean recognition time ${snapshot.data.toStringAsFixed(5)}',
+              style: TextStyle(fontSize: 20),
+            ));
       },
     );
   }
@@ -193,16 +191,16 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
     );
   }
 
-    Widget _stopTestButtom() {
+  Widget _stopTestButtom() {
     return FlatButton(
       child: Text('Stop Benchmark'),
       onPressed: () {
-        _modelTester.isTesting=false;
+        _modelTester.isTesting = false;
       },
     );
   }
 
-    Widget _clearResultsButtom() {
+  Widget _clearResultsButtom() {
     return FlatButton(
       child: Text('Clear Results'),
       onPressed: () {
@@ -218,33 +216,35 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
         ModelData model = models[_modelIndex];
         model.imgStd = _selectedStd;
         model.imgMean = _selectedMean;
-        ModelPrepper.prepModel(model:model.model,labels: model.labels);
+        ModelPrepper.prepModel(model: model.model, labels: model.labels);
         LiveTestBlock _liveBloc = LiveTestBlock(model);
         //Instantiate live block
         //Switch route and pass live block to live screen
         Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => LiveTestScreen(bloc:_liveBloc)),
-  );
+          context,
+          MaterialPageRoute(
+              builder: (context) => LiveTestScreen(bloc: _liveBloc)),
+        );
       },
     );
   }
 
-    Widget _multiFrameButton() {
+  Widget _multiFrameButton() {
     return FlatButton(
       child: Text('MultiFrame'),
       onPressed: () {
         ModelData model = models[_modelIndex];
         model.imgStd = _selectedStd;
         model.imgMean = _selectedMean;
-        ModelPrepper.prepModel(model:model.model,labels: model.labels);
+        ModelPrepper.prepModel(model: model.model, labels: model.labels);
         MultiFrameBlock _multiFrameBloc = MultiFrameBlock(model);
         //Instantiate live block
         //Switch route and pass live block to live screen
         Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => MultiFrameScreen(bloc:_multiFrameBloc)),
-  );
+          context,
+          MaterialPageRoute(
+              builder: (context) => MultiFrameScreen(bloc: _multiFrameBloc)),
+        );
       },
     );
   }
@@ -255,7 +255,6 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
 
     return Scaffold(
       body: ListView(
-
         children: <Widget>[
           _modelSelector(),
           _setMeanContainer(),

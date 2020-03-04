@@ -9,11 +9,11 @@ class RoiFrame extends StatelessWidget {
 
   RoiFrame({this.block});
 
-  void moveFirstTag({DragUpdateDetails details}){
+  void moveFirstTag({DragUpdateDetails details}) {
     block.moveFirstTag(details);
   }
 
-  void moveSecondTag({DragUpdateDetails details}){
+  void moveSecondTag({DragUpdateDetails details}) {
     block.moveSecondTag(details);
   }
 
@@ -46,7 +46,7 @@ class RoiFrame extends StatelessWidget {
         //   selectFrame(details, appState);
         // },
         onPanUpdate: (DragUpdateDetails details) {
-          moveFirstTag(details:details);
+          moveFirstTag(details: details);
         },
         child: Container(
           color: Colors.blue,
@@ -75,7 +75,7 @@ class RoiFrame extends StatelessWidget {
         //   selectFrame(details, appState);
         // },
         onPanUpdate: (DragUpdateDetails details) {
-          moveSecondTag(details:details);
+          moveSecondTag(details: details);
         },
         child: Container(
           color: Colors.blue,

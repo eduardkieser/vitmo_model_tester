@@ -231,22 +231,22 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
             padding: EdgeInsets.all(10),
             child: RawMaterialButton(
               onPressed: () {
-                if (!bloc.isRecording){
+                if (!bloc.isRecording) {
                   bloc.isRecording = true;
                   bloc.startImageStream();
-                }else{
+                } else {
                   bloc.isRecording = false;
                   bloc.stopImageStream();
                 }
               },
               child: Icon(
-                bloc.isRecording? Icons.stop:Icons.play_arrow,
+                bloc.isRecording ? Icons.stop : Icons.play_arrow,
                 color: Colors.white,
                 size: 30.0,
               ),
               shape: new CircleBorder(),
               elevation: 2.0,
-              fillColor: bloc.isRecording? Colors.red:Colors.blue,
+              fillColor: bloc.isRecording ? Colors.red : Colors.blue,
               padding: const EdgeInsets.all(15.0),
             )));
   }
@@ -281,9 +281,15 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
         return Stack(
           children: <Widget>[
             buildGestureDetector(bloc),
-            (bloc.showSettingsWidget | bloc.isAddingNewframe)? Container():showSettingsButton(bloc),
-            (bloc.showSettingsWidget | bloc.isAddingNewframe)? Container():recordStopButton(bloc),
-            (bloc.showSettingsWidget | bloc.isAddingNewframe)? Container():addFrameButton(bloc)
+            (bloc.showSettingsWidget | bloc.isAddingNewframe)
+                ? Container()
+                : showSettingsButton(bloc),
+            (bloc.showSettingsWidget | bloc.isAddingNewframe)
+                ? Container()
+                : recordStopButton(bloc),
+            (bloc.showSettingsWidget | bloc.isAddingNewframe)
+                ? Container()
+                : addFrameButton(bloc)
           ],
         );
       },

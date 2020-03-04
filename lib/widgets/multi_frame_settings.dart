@@ -19,10 +19,11 @@ class _MultiFrameSettingsState extends State<MultiFrameSettings> {
   Color _iconColorOff = Colors.grey;
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     BackButtonInterceptor.add(myInterceptor);
   }
+
   bool myInterceptor(bool stopDefaultButtonEvent) {
     widget._bloc.toggleShowSettings(); // Do some stuff.
     return true;
@@ -155,7 +156,7 @@ class _MultiFrameSettingsState extends State<MultiFrameSettings> {
     );
   }
 
-    Widget _returnToMain() {
+  Widget _returnToMain() {
     return Card(
       child: ListTile(
         leading: Icon(Icons.done, color: _iconColorOn),

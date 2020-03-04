@@ -10,7 +10,6 @@ import 'package:image/image.dart' as imglib;
 import 'package:stats/stats.dart';
 
 class DataBuilder {
-
   Future<Map<String, String>> getTestingData(
       {String folderName, int numPerClass}) async {
     Map<String, String> dataMap = Map();
@@ -21,7 +20,8 @@ class DataBuilder {
     // print(_perStatus.toString());
     // get a list of all the folders in the "numbers" directory
 
-    Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+    Map<PermissionGroup, PermissionStatus> permissions =
+        await PermissionHandler().requestPermissions([PermissionGroup.storage]);
     print(permissions.toString());
 
     List<FileSystemEntity> catList = Directory(rootDir).listSync();
@@ -71,32 +71,31 @@ class ModelTester {
     return dataMap;
   }
 
-  getImMeanStdFromFilePath(String filePath){
+  getImMeanStdFromFilePath(String filePath) {
     imglib.Image image = imglib.decodeImage(File(filePath).readAsBytesSync());
     List<int> png = imglib.writePng(image);
     var stats = Stats.fromData(png).withPrecision(4);
     num std = stats.standardDeviation;
     num mean = stats.mean;
-    return {'mean':mean,'std':std};
+    return {'mean': mean, 'std': std};
   }
 
-  testModelWithParams(
-      {Map<String, String> dataMap,
-      double imgStd,
-      double imgMean,
-      Stream<List<PerformanceData>> resultsStream,
-      }) async {
+  testModelWithParams({
+    Map<String, String> dataMap,
+    double imgStd,
+    double imgMean,
+    Stream<List<PerformanceData>> resultsStream,
+  }) async {
     isTesting = true;
     int countTrue = 0;
     int countFalse = 0;
     int oneIfTrue = 0;
-    
+
     print('#################### mean:$imgMean ###########################');
     print("#################### getting to the testing ##################");
 
     for (String imgPath in dataMap.keys) {
-
-      if(!isTesting){
+      if (!isTesting) {
         print('$isTesting');
         break;
       }
@@ -118,12 +117,10 @@ class ModelTester {
 
       // imglib.Image image = imglib.decodeImage(File(imgPath).readAsBytesSync());
 
-
-
-      int duration = DateTime.now().millisecondsSinceEpoch-startTime;
+      int duration = DateTime.now().millisecondsSinceEpoch - startTime;
       bloc.addRecognitionDuration(duration);
 
-      if (recognitions.length != 3){
+      if (recognitions.length != 3) {
         print('model returned weird length');
         continue;
       }
@@ -132,7 +129,7 @@ class ModelTester {
         int p0 = int.parse(recognitions[0]['label']);
         int p1 = int.parse(recognitions[1]['label']);
         int p2 = int.parse(recognitions[2]['label']);
-        int intRes = p0+p1+p2;
+        int intRes = p0 + p1 + p2;
         String result = intRes.toString();
         // String result = recognitions[0]['label'];
         if (result == trueLabel) {
@@ -144,7 +141,6 @@ class ModelTester {
         }
 
         bloc.addInt(oneIfTrue);
-        
       }
 
       // print('accuracy = ${countTrue / (countTrue + countFalse)}');
@@ -161,7 +157,9 @@ class ModelTester {
         model: testSetup.model, labels: testSetup.labels);
 
     testModelWithParams(
-        dataMap: dataMap, imgStd: testSetup.imgStd, imgMean: testSetup.imgMean,
-        );
+      dataMap: dataMap,
+      imgStd: testSetup.imgStd,
+      imgMean: testSetup.imgMean,
+    );
   }
 }

@@ -86,7 +86,7 @@ class Repository {
     Map<String, List<VitmoEntry>> parsedEntries = await getParsedEntriesList();
     List<DateTime> allTimeStamps = [];
     List<String> allColumns = [];
-    if (parsedEntries == null){
+    if (parsedEntries == null) {
       return null;
     }
     parsedEntries.forEach((key, listEnty) {
@@ -123,8 +123,7 @@ class Repository {
     return csv;
   }
 
-  void sendDataAsEmail()async{
-
+  void sendDataAsEmail() async {
     String csv = await getCsvFromRepo();
     Directory tempDir = await getTemporaryDirectory();
     String filename = '${tempDir.path}/VitmoData.csv';
