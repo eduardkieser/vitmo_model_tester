@@ -165,6 +165,19 @@ class _MultiFrameSettingsState extends State<MultiFrameSettings> {
     );
   }
 
+  Widget _connectToServer(){
+    return Card(
+      child: ListTile(
+        leading: Icon(Icons.network_check, color: _iconColorOn),
+        title: Text('Connect'),
+        subtitle: Text('Connect to backend server'),
+        onTap: () {
+          widget._bloc.connectToServer();
+        },
+      ),
+    ); 
+  }
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -188,7 +201,8 @@ class _MultiFrameSettingsState extends State<MultiFrameSettings> {
               _showCharts(),
               _uploadData(),
               _clearData(),
-              _returnToMain()
+              _returnToMain(),
+              _connectToServer(),
             ],
           ),
         ),

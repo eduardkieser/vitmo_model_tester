@@ -11,8 +11,10 @@ import 'package:vitmo_model_tester/data/Repository.dart';
 import 'package:vitmo_model_tester/data/entry_model.dart';
 import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
+import 'package:vitmo_model_tester/server/recorder_server.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
+import 'package:client/server/recorder_service_impl.dart';
 
 
 class MultiFrameBlock {
@@ -44,8 +46,9 @@ class MultiFrameBlock {
   bool showSettingsWidget = false;
   bool isUpsideDown = false;
 
-  List<imglib.Image> demoImages = List<imglib.Image>(6);
-  List<Image> demoDisplayImages = List<Image>(6);
+  static int n_demo_frames = 25;
+  List<imglib.Image> demoImages = List<imglib.Image>(n_demo_frames);
+  List<Image> demoDisplayImages = List<Image>(n_demo_frames);
   int currentDemoFrameIndex = 0;
   Timer demoTimer;
 
@@ -66,8 +69,17 @@ class MultiFrameBlock {
       StreamController.broadcast();
 
   StreamController<bool> isAddingNewFrameStreamController = StreamController();
-
   StreamController<Entry> captureController = StreamController();
+
+  ////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////// Networking things! ////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
+  RecorderServiceImpl recorderServiceImpl = RecorderServiceImpl();
+
+  RecorderServer recorderServer = RecorderServer();
+  // I need to open a stream (controller) that has to listen to incomming requests
+  // from the recorder_service and do things.
+  //  
 
   // //////////////////////////////////////////////////////////////////////////////
   // ////////////////// Lots of zooming and panning stuff /////////////////////////
@@ -288,7 +300,7 @@ class MultiFrameBlock {
       if (frame.currentValue.length == 1) {
         repository.insertEntry(Entry(
             value: frame.currentValue[0] == 'nan'
-                ? -1
+                ? 0
                 : int.parse(frame.currentValue[0]),
             certainty: frame.certainty[0],
             label: frame.label,
@@ -298,7 +310,7 @@ class MultiFrameBlock {
         for (int i = 0; i < frame.currentValue.length; i++) {
           repository.insertEntry(Entry(
               value: frame.currentValue[i] == 'nan'
-                  ? -1
+                  ? 0
                   : int.parse(frame.currentValue[i]),
               certainty: frame.certainty[i],
               label: '${frame.label}_$i',
@@ -361,7 +373,7 @@ class MultiFrameBlock {
         'cropData': cropData,
         'invertColors': invertColors,
         'isDemoMode': isDemoMode,
-        'demoImage': demoImages[currentDemoFrameIndex % 5],
+        'demoImage': demoImages[currentDemoFrameIndex % n_demo_frames],
         'isUpsideDown': isUpsideDown
       };
       croppedImages = await compute(
@@ -387,7 +399,10 @@ class MultiFrameBlock {
 
   void stopImageStream() {
     isRecording = false;
-    cameraController.stopImageStream();
+    if (cameraController != null){
+      cameraController.stopImageStream();
+    }
+    
     stopCaptureTimer();
     frameController.sink.add(this);
   }
@@ -418,8 +433,8 @@ class MultiFrameBlock {
   }
 
   loadDemoImageAssets() async {
-    for (int fIx = 0; fIx < 6; fIx++) {
-      String fileName = 'assets/images/IMG_0${fIx + 1}.png';
+    for (int fIx = 0; fIx < n_demo_frames; fIx++) {
+      String fileName = 'assets/images/${fIx + 1}.png';
       ByteData data = await rootBundle.load(fileName);
       List<int> imgFile =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
@@ -457,6 +472,10 @@ class MultiFrameBlock {
       ]);
     }
     frameController.sink.add(this);
+  }
+
+  void connectToServer(){
+    recorderServer.openChannels([]);
   }
 
   dispose() {

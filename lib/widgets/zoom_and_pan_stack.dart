@@ -145,10 +145,17 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     );
   }
 
-  _builDemoScreenWidget() {
+  _builDemoScreenWidget(BuildContext context) {
     if (bloc.isDemoMode) {
-      if (bloc.demoDisplayImages[bloc.currentDemoFrameIndex % 5] != null) {
-        return bloc.demoDisplayImages[bloc.currentDemoFrameIndex % 5];
+      if (bloc.demoDisplayImages[bloc.currentDemoFrameIndex % MultiFrameBlock.n_demo_frames] != null) {
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: FittedBox(
+            fit: BoxFit.fill,
+            child: bloc.demoDisplayImages[bloc.currentDemoFrameIndex % MultiFrameBlock.n_demo_frames]
+          ),
+        );
       }
     }
     return Container();
@@ -162,13 +169,13 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     }
   }
 
-  Widget _buildStackWidget(MultiFrameBlock bloc) {
+  Widget _buildStackWidget(MultiFrameBlock bloc, BuildContext context) {
     List<Widget> roiFrames = _buildRoiFrames(bloc);
     _getViewSize('Image Widget');
     return Stack(
       children: <Widget>[
         _buildPreviewWindow(),
-        _builDemoScreenWidget(),
+        _builDemoScreenWidget(context),
         Stack(
           children: roiFrames,
         ),
@@ -178,13 +185,13 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     );
   }
 
-  Widget _buildTransformWidget(bloc) {
+  Widget _buildTransformWidget(bloc, BuildContext context) {
     _getViewSize('Transform Widget');
     return Transform.scale(
       scale: bloc.zoomScale,
       child: Transform.translate(
           offset: bloc.panOffset / bloc.zoomScale,
-          child: Center(child: _buildStackWidget(bloc))),
+          child: Center(child: _buildStackWidget(bloc, context))),
     );
   }
 
@@ -201,7 +208,7 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
           onScaleEnd: (ScaleEndDetails details) {
             _stopScaleAndPan(details, bloc);
           },
-          child: _buildTransformWidget(bloc)),
+          child: _buildTransformWidget(bloc,context)),
     );
   }
 

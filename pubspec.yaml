@@ -29,7 +29,6 @@ dependencies:
   provider: ^2.0.1
   camera: ^0.5.7+2
   image: ^2.1.4  # if I can find out where to upgrade flutter_test this can be bumped too..
-  # fab_dialer: ^0.1.3
   sqflite: ^1.2.0
   path: ^1.6.4
   charts_flutter: ^0.8.1
@@ -38,9 +37,16 @@ dependencies:
   csv: ^4.0.3
   flutter_email_sender: ^2.2.1
   flutter_mailer: ^0.4.2
-  # back_button_interceptor: ^4.2.2
   tflite: ^1.0.4
   pedantic: ^1.8.0
+  grpc: ^2.1.3
+  fixnum: ^0.10.11
+  protobuf: ^1.0.1
+
+  client:
+    path: ../../beatcounter-grpc/client/
+  
+
 
 dev_dependencies:
   flutter_test:
@@ -70,9 +76,4 @@ flutter:
    - assets/Resnet_20.tflite
 #   - assets/Resnet20_0_to_20.tflite
    - assets/Resnet20_BatchFirst.tflite
-#   - assets/images/IMG_01.png
-#   - assets/images/IMG_02.png
-#   - assets/images/IMG_03.png
-#   - assets/images/IMG_04.png
-#   - assets/images/IMG_05.png
-#   - assets/images/IMG_06.png
+   - assets/images/
