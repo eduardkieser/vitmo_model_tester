@@ -1,3 +1,10 @@
+# gprc related generate files
+*.pb.dart
+*.pbgprc.dart
+*.pbenum.dart
+*.pbjson.dart
+
+
 # Miscellaneous
 *.class
 *.log
