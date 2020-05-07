@@ -26,7 +26,7 @@ dependencies:
  
   path_provider: ^0.5.0+1
   permission_handler: ^3.2.2
-  provider: ^2.0.1
+  provider: ^4.0.5
   camera: ^0.5.7+2
   image: ^2.1.4  # if I can find out where to upgrade flutter_test this can be bumped too..
   sqflite: ^1.2.0
@@ -42,6 +42,7 @@ dependencies:
   grpc: ^2.1.3
   fixnum: ^0.10.11
   protobuf: ^1.0.1
+  flutter_bloc: ^4.0.0
 
   client:
     path: ../../beatcounter-grpc/client/

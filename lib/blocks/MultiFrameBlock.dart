@@ -11,7 +11,7 @@ import 'package:vitmo_model_tester/data/Repository.dart';
 import 'package:vitmo_model_tester/data/entry_model.dart';
 import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
-import 'package:vitmo_model_tester/server/recorder_server.dart';
+import 'package:client/server/recorder_service_impl.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
 import 'package:client/server/recorder_service_impl.dart';
@@ -74,9 +74,7 @@ class MultiFrameBlock {
   ////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////// Networking things! ////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
-  RecorderServiceImpl recorderServiceImpl = RecorderServiceImpl();
 
-  RecorderServer recorderServer = RecorderServer();
   // I need to open a stream (controller) that has to listen to incomming requests
   // from the recorder_service and do things.
   //  
@@ -472,10 +470,6 @@ class MultiFrameBlock {
       ]);
     }
     frameController.sink.add(this);
-  }
-
-  void connectToServer(){
-    recorderServer.openChannels([]);
   }
 
   dispose() {

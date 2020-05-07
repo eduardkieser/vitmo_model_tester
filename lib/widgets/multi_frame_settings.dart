@@ -172,7 +172,7 @@ class _MultiFrameSettingsState extends State<MultiFrameSettings> {
         title: Text('Connect'),
         subtitle: Text('Connect to backend server'),
         onTap: () {
-          widget._bloc.connectToServer();
+          // widget._bloc.connectToServer();
         },
       ),
     ); 

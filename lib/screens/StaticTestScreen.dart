@@ -28,51 +28,13 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
   double _selectedStd = 155;
 
   List<ModelData> models = [
-    // ModelData(
-    //     model: 'assets/dragon_mini_16_48_86.tflite',
-    //     labels: "assets/dragon_labels_33.txt",
-    //     dataPath: 'VitmoModelTester/data',
-    //     imgSize:48),
-    // ModelData(
-    //     model: 'assets/dragon_mini_32_48_95.tflite',
-    //     labels: "assets/dragon_labels_33.txt",
-    //     dataPath: 'VitmoModelTester/data',
-    //     imgSize:48),
-    // ModelData(
-    //     model: 'assets/dragon_mini_32_48_97.tflite',
-    //     labels: "assets/dragon_labels_33.txt",
-    //     dataPath: 'VitmoModelTester/data',
-    //     imgSize:48),
-    // ModelData(
-    //     model: 'assets/ed_97_48_1.tflite',
-    //     labels: "assets/dragon_labels_33.txt",
-    //     dataPath: 'VitmoModelTester/data',
-    //     imgSize:48),
-    // ModelData(
-    //     model: 'assets/hardie_01.tflite',
-    //     labels: "assets/dragon_labels_33.txt",
-    //     dataPath: 'VitmoModelTester/data',
-    //     imgSize:48),
-    // ModelData(
-    //     model: 'assets/hardie_02_48_99.tflite',
-    //     labels: "assets/dragon_labels_33.txt",
-    //     dataPath: 'VitmoModelTester/data',
-    //     imgSize:48),
+
     ModelData(
         model: 'assets/Resnet_20.tflite',
         labels: "assets/dragon_labels_33.txt",
         dataPath: 'VitmoModelTester/data',
         imgSize: 48),
-    // ModelData(
-    //     model: 'assets/Resnet20_0_to_20.tflite',
-    //     labels: "assets/dragon_labels_33.txt",
-    //     dataPath: 'VitmoModelTester/data20',
-    //     imgSize:48),
-    // ModelData(
-    //     model: 'assets/Resnet20_BatchFirst.tflite',
-    //     labels: "assets/dragon_labels_33.txt",
-    //     dataPath: 'VitmoModelTester/data20',
-    //     imgSize:48),
+
   ];
 
   Widget _modelSelector() {
