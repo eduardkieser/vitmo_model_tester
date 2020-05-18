@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/widgets/add_new_roi.dart';
@@ -8,6 +7,9 @@ import './../blocks/MultiFrameBlock.dart';
 import './../models/roi_frame_model.dart';
 import './../widgets/roi_frame.dart';
 import 'multi_frame_settings.dart';
+
+import 'package:beatcounter_recorder/entities/bed.dart' as bcbed;
+import 'package:vitmo_admin_client/domain/recorder/roi_frame.dart' as bcroi;
 
 class ZoomAndPanStack extends StatefulWidget {
   final MultiFrameBlock bloc;
@@ -100,6 +102,24 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
     }
   }
 
+  // List<Widget> buildFramesForBed(BuildContext context, bcbed.Bed bed) {
+  //   List<Widget> frameWidgets = [];
+  //   bed.frames.forEach((int frameKey, bcroi.RoiFrame frame) {
+  //     frameWidgets.add(RoiFrameWidget(
+  //       roiFrame: frame
+  //       ));
+  //   });
+  //   return frameWidgets;
+  // }
+
+  // List<Widget> buildRoiFramesOverlay(MultiFrameBlock bloc) {
+  //   List<Widget> roiFrames = [];
+  //   bloc.recorder.beds.forEach((bedKey, bed) {
+  //     roiFrames.addAll(buildFramesForBed(context, bed));
+  //   });
+  //   return roiFrames;
+  // }
+
   Widget _buildPreviewWindow() {
     double angle = 0;
     if (bloc.isUpsideDown) {
@@ -171,6 +191,7 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
 
   Widget _buildStackWidget(MultiFrameBlock bloc, BuildContext context) {
     List<Widget> roiFrames = _buildRoiFrames(bloc);
+    // List<Widget> newRoiFrames = _buildNewRoiFrames(bloc);
     _getViewSize('Image Widget');
     return Stack(
       children: <Widget>[

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 import 'package:vitmo_model_tester/model_tester.dart';
@@ -27,15 +26,15 @@ class RouteGenerator{
         model.imgMean = _selectedMean;
         ModelPrepper.prepModel(model: model.model, labels: model.labels);
         MultiFrameBlock _multiFrameBloc = MultiFrameBlock(model);
-        RecorderServiceImpl recorderServiceImpl = RecorderServiceImpl(_multiFrameBloc);
 
-
+        // RecorderServiceImpl recorderServiceImpl = RecorderServiceImpl(_multiFrameBloc);
         // final server = grpc.Server([recorderServiceImpl]);
-        // server.serve(port: 8080);
+        // server.serve(port: 8080); 
 
 
         return MultiFrameScreen(bloc: _multiFrameBloc,);
       });
+      // case 'page2'
       default:
       return MaterialPageRoute(builder: (context) => Center(child: Text('shiiiit'),),
       );

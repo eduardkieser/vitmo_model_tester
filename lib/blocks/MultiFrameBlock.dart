@@ -15,9 +15,10 @@ import 'package:client/server/recorder_service_impl.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
 import 'package:client/server/recorder_service_impl.dart';
+import 'package:beatcounter_recorder/application/recorder_block.dart';
 
 
-class MultiFrameBlock {
+class MultiFrameBlock extends RecorderBloc{
   MultiFrameBlock(this.model) {
     prepReader(model);
     loadDemoImageAssets();
