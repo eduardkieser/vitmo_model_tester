@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vitmo_model_tester/application/routes/route_generator.dart';
 
-import 'screens/StaticTestScreen.dart';
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {

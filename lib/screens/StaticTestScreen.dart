@@ -1,3 +1,4 @@
+import 'package:beatcounter_recorder/infrastructure/config_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:vitmo_model_tester/blocks/LiveTestBlock.dart';
 import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
@@ -16,6 +17,7 @@ class StaticTestScreen extends StatefulWidget {
 class _StaticTestScreenState extends State<StaticTestScreen> {
   StaticTestBloc _block = StaticTestBloc();
   ModelTester _modelTester;
+  FakeConfigRepository configRepository = FakeConfigRepository();
 
   @override
   void initState() {
@@ -197,7 +199,7 @@ class _StaticTestScreenState extends State<StaticTestScreen> {
         model.imgStd = _selectedStd;
         model.imgMean = _selectedMean;
         ModelPrepper.prepModel(model: model.model, labels: model.labels);
-        MultiFrameBlock _multiFrameBloc = MultiFrameBlock(model);
+        MultiFrameBlock _multiFrameBloc = MultiFrameBlock(model, configRepository);
         //Instantiate live block
         //Switch route and pass live block to live screen
         Navigator.push(

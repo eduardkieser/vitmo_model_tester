@@ -44,15 +44,8 @@ dependencies:
   protobuf: ^1.0.1
   flutter_bloc: ^4.0.0
 
-  client:
-    path: ../../beatcounter-grpc/client/
   beatcounter_recorder:
-    path: ../../beatcounter_recorder/
-
-  vitmo_admin_client:
-    path: ../../vitmo_admin_client/vitmo_admin_client/
-  
-
+    path: ./../../beatcounter_recorder/
 
 dev_dependencies:
   flutter_test:

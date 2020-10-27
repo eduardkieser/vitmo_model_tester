@@ -9,7 +9,7 @@ import './../widgets/roi_frame.dart';
 import 'multi_frame_settings.dart';
 
 import 'package:beatcounter_recorder/entities/bed.dart' as bcbed;
-import 'package:vitmo_admin_client/domain/recorder/roi_frame.dart' as bcroi;
+import 'package:beatcounter_recorder/entities/roi_frame.dart' as bcroi;
 
 class ZoomAndPanStack extends StatefulWidget {
   final MultiFrameBlock bloc;

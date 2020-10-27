@@ -11,15 +11,15 @@ import 'package:vitmo_model_tester/data/Repository.dart';
 import 'package:vitmo_model_tester/data/entry_model.dart';
 import 'package:vitmo_model_tester/models/model_data.dart';
 import 'package:vitmo_model_tester/models/roi_frame_model.dart';
-import 'package:client/server/recorder_service_impl.dart';
 import 'package:vitmo_model_tester/utils/image_converter.dart';
 import 'package:vitmo_model_tester/utils/image_reader.dart';
-import 'package:client/server/recorder_service_impl.dart';
-import 'package:beatcounter_recorder/application/recorder_block.dart';
+import 'package:beatcounter_recorder/application/bloc/recorder_bloc.dart';
+import 'package:beatcounter_recorder/infrastructure/config_repository.dart';
 
+class MultiFrameBlock extends RecorderBloc {
+  ConfigRepository configRepository;
 
-class MultiFrameBlock extends RecorderBloc{
-  MultiFrameBlock(this.model) {
+  MultiFrameBlock(this.model, this.configRepository) : super(configRepository) {
     prepReader(model);
     loadDemoImageAssets();
   }
@@ -78,7 +78,7 @@ class MultiFrameBlock extends RecorderBloc{
 
   // I need to open a stream (controller) that has to listen to incomming requests
   // from the recorder_service and do things.
-  //  
+  //
 
   // //////////////////////////////////////////////////////////////////////////////
   // ////////////////// Lots of zooming and panning stuff /////////////////////////
@@ -217,8 +217,12 @@ class MultiFrameBlock extends RecorderBloc{
     if (frames.length - 1 < _selectedFrameIndex) {
       _selectedFrameIndex = frames.length - 1;
     }
-    if (croppedImages !=null){croppedImages.removeAt(selectedFrameIndex);}
-    if (frames!=null){frames.removeAt(selectedFrameIndex);}
+    if (croppedImages != null) {
+      croppedImages.removeAt(selectedFrameIndex);
+    }
+    if (frames != null) {
+      frames.removeAt(selectedFrameIndex);
+    }
     frameController.sink.add(this);
   }
 
@@ -398,10 +402,10 @@ class MultiFrameBlock extends RecorderBloc{
 
   void stopImageStream() {
     isRecording = false;
-    if (cameraController != null){
+    if (cameraController != null) {
       cameraController.stopImageStream();
     }
-    
+
     stopCaptureTimer();
     frameController.sink.add(this);
   }
