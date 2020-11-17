@@ -1,15 +1,12 @@
 import 'dart:math';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:vitmo_model_tester/widgets/add_new_roi.dart';
+import 'package:vitmo_model_tester/widgets/add_new_lens.dart';
 
 import './../blocks/MultiFrameBlock.dart';
 import './../models/roi_frame_model.dart';
-import './../widgets/roi_frame.dart';
+import './../widgets/lens.dart';
 import 'multi_frame_settings.dart';
-
-import 'package:beatcounter_recorder/entities/bed.dart' as bcbed;
-import 'package:beatcounter_recorder/entities/roi_frame.dart' as bcroi;
 
 class ZoomAndPanStack extends StatefulWidget {
   final MultiFrameBlock bloc;
@@ -85,7 +82,7 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
   }
 
   List<Widget> _buildRoiFrames(MultiFrameBlock bloc) {
-    List<RoiFrameModel> framesModel = bloc.frames;
+    List<LensModel> framesModel = bloc.frames;
     List<Widget> frameWidgets = <Widget>[];
     int nFrames = framesModel.length;
     if (nFrames == 0) {
@@ -101,24 +98,6 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
       return frameWidgets;
     }
   }
-
-  // List<Widget> buildFramesForBed(BuildContext context, bcbed.Bed bed) {
-  //   List<Widget> frameWidgets = [];
-  //   bed.frames.forEach((int frameKey, bcroi.RoiFrame frame) {
-  //     frameWidgets.add(RoiFrameWidget(
-  //       roiFrame: frame
-  //       ));
-  //   });
-  //   return frameWidgets;
-  // }
-
-  // List<Widget> buildRoiFramesOverlay(MultiFrameBlock bloc) {
-  //   List<Widget> roiFrames = [];
-  //   bloc.recorder.beds.forEach((bedKey, bed) {
-  //     roiFrames.addAll(buildFramesForBed(context, bed));
-  //   });
-  //   return roiFrames;
-  // }
 
   Widget _buildPreviewWindow() {
     double angle = 0;
@@ -167,14 +146,16 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
 
   _builDemoScreenWidget(BuildContext context) {
     if (bloc.isDemoMode) {
-      if (bloc.demoDisplayImages[bloc.currentDemoFrameIndex % MultiFrameBlock.n_demo_frames] != null) {
+      if (bloc.demoDisplayImages[
+              bloc.currentDemoFrameIndex % MultiFrameBlock.n_demo_frames] !=
+          null) {
         return Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: FittedBox(
-            fit: BoxFit.fill,
-            child: bloc.demoDisplayImages[bloc.currentDemoFrameIndex % MultiFrameBlock.n_demo_frames]
-          ),
+              fit: BoxFit.fill,
+              child: bloc.demoDisplayImages[
+                  bloc.currentDemoFrameIndex % MultiFrameBlock.n_demo_frames]),
         );
       }
     }
@@ -229,7 +210,7 @@ class _ZoomAndPanStackState extends State<ZoomAndPanStack> {
           onScaleEnd: (ScaleEndDetails details) {
             _stopScaleAndPan(details, bloc);
           },
-          child: _buildTransformWidget(bloc,context)),
+          child: _buildTransformWidget(bloc, context)),
     );
   }
 

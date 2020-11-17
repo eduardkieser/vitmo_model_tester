@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class RoiFrameModel {
+class LensModel {
   double startingFrameWidth = 80.0;
   double startingFrameHeight = 80.0;
   double tagWidth = 40.0;
@@ -14,7 +14,7 @@ class RoiFrameModel {
   List<String> currentValue = ['nan'];
   bool isMMM;
 
-  RoiFrameModel({this.firstCorner, this.label = 'X', this.isMMM = false}) {
+  LensModel({this.firstCorner, this.label = 'X', this.isMMM = false}) {
     secondCorner =
         firstCorner + Offset(startingFrameWidth, startingFrameHeight);
   }

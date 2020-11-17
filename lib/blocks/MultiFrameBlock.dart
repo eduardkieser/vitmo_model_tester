@@ -26,10 +26,10 @@ class MultiFrameBlock extends RecorderBloc {
   ModelData model;
   ImageReader _reader;
   imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0, filter: 0);
-  List<RoiFrameModel> frames = [
-    RoiFrameModel(firstCorner: Offset(50.0, 50.0), label: 'HR'),
-    RoiFrameModel(firstCorner: Offset(320.0, 50.0), label: 'ABP'),
-    RoiFrameModel(firstCorner: Offset(50.0, 300.0), label: 'RespRate'),
+  List<LensModel> frames = [
+    LensModel(firstCorner: Offset(50.0, 50.0), label: 'HR'),
+    LensModel(firstCorner: Offset(320.0, 50.0), label: 'ABP'),
+    LensModel(firstCorner: Offset(50.0, 300.0), label: 'RespRate'),
   ];
   int _selectedFrameIndex;
   double zoomScale = 1.0;
@@ -198,7 +198,7 @@ class MultiFrameBlock extends RecorderBloc {
     if (label == null) {
       return;
     }
-    frames.add(RoiFrameModel(
+    frames.add(LensModel(
         firstCorner: Offset(50.0, 50.0), label: label, isMMM: isMMM));
     _selectedFrameIndex = frames.length - 1;
     frameController.sink.add(this);
@@ -231,7 +231,7 @@ class MultiFrameBlock extends RecorderBloc {
     frameController.sink.add(this);
   }
 
-  RoiFrameModel get selectedFrame {
+  LensModel get selectedFrame {
     return frames[_selectedFrameIndex];
   }
 

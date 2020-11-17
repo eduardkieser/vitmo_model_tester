@@ -15,7 +15,9 @@ class LiveTestBlock {
   ImageReader _reader;
   imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0, filter: 0);
 
-  List<RoiFrameModel> frames = [RoiFrameModel(firstCorner: Offset(50.0, 50.0), label: 'F')];
+  List<LensModel> frames = [
+    LensModel(firstCorner: Offset(50.0, 50.0), label: 'F')
+  ];
 
   LiveTestBlock(this.model) {
     prepReader(model);

@@ -27,7 +27,7 @@ class RoiFrame extends StatelessWidget {
   // }
 
   Widget _buildFirstTag(LiveTestBlock block) {
-    RoiFrameModel frameData = block.frames[0];
+    LensModel frameData = block.frames[0];
     bool _isTop = frameData.firstCorner.dy < frameData.secondCorner.dy;
     bool _isLeft = frameData.firstCorner.dx < frameData.secondCorner.dx;
     double _height = frameData.tagHeight / 1;
@@ -57,7 +57,7 @@ class RoiFrame extends StatelessWidget {
   }
 
   Widget _buildSecondTag(LiveTestBlock block) {
-    RoiFrameModel frameData = block.frames[0];
+    LensModel frameData = block.frames[0];
     bool _isTop = frameData.firstCorner.dy > frameData.secondCorner.dy;
     bool _isLeft = frameData.firstCorner.dx > frameData.secondCorner.dx;
     double _height = frameData.tagHeight / 1;
@@ -88,7 +88,7 @@ class RoiFrame extends StatelessWidget {
   }
 
   Widget _buildBorder(LiveTestBlock block) {
-    RoiFrameModel frameData = block.frames[0];
+    LensModel frameData = block.frames[0];
     double _top =
         [frameData.firstCorner.dy, frameData.secondCorner.dy].reduce(min);
     double _left =

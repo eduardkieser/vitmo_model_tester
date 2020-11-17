@@ -7,7 +7,7 @@ import 'package:vitmo_model_tester/blocks/MultiFrameBlock.dart';
 
 import '../models/roi_frame_model.dart';
 
-class RoiData {
+class LensData {
   List<int> latestImage;
   Color tagColor;
   List<Color> backgroundColors;
@@ -18,7 +18,7 @@ class RoiFrame extends StatelessWidget {
   final int frameIndex;
   RoiFrame({this.bloc, this.frameIndex});
 
-  void getLatestImage(RoiData roiData) {
+  void getLatestImage(LensData roiData) {
     if (!bloc.showActualCroppedFrames) {
       return;
     }
@@ -37,7 +37,7 @@ class RoiFrame extends StatelessWidget {
     }
   }
 
-  setTagColorFromCertainty(RoiData roiData) {
+  setTagColorFromCertainty(LensData roiData) {
     if (!bloc.isRecording) {
       roiData.tagColor = Colors.blue;
       return;
@@ -56,7 +56,7 @@ class RoiFrame extends StatelessWidget {
     }
   }
 
-  setBackgroundColorsFromCertainty(RoiData roiData) {
+  setBackgroundColorsFromCertainty(LensData roiData) {
     roiData.backgroundColors = [Colors.white, Colors.white, Colors.white];
     List<num> certainties = bloc.frames[frameIndex].certainty;
     if (certainties.length == 1) {
@@ -116,8 +116,8 @@ class RoiFrame extends StatelessWidget {
     return certainty.toStringAsFixed(2);
   }
 
-  Widget _buildFirstTag(MultiFrameBlock bloc, RoiData roiData) {
-    RoiFrameModel frameData = bloc.frames[frameIndex];
+  Widget _buildFirstTag(MultiFrameBlock bloc, LensData roiData) {
+    LensModel frameData = bloc.frames[frameIndex];
     bool _isTop = frameData.firstCorner.dy < frameData.secondCorner.dy;
     bool _isLeft = frameData.firstCorner.dx < frameData.secondCorner.dx;
     double _height = frameData.tagHeight / 1;
@@ -151,8 +151,8 @@ class RoiFrame extends StatelessWidget {
     );
   }
 
-  Widget _buildSecondTag(MultiFrameBlock bloc, RoiData roiData) {
-    RoiFrameModel frameData = bloc.frames[frameIndex];
+  Widget _buildSecondTag(MultiFrameBlock bloc, LensData roiData) {
+    LensModel frameData = bloc.frames[frameIndex];
     bool _isTop = frameData.firstCorner.dy > frameData.secondCorner.dy;
     bool _isLeft = frameData.firstCorner.dx > frameData.secondCorner.dx;
     double _height = frameData.tagHeight / 1;
@@ -188,8 +188,8 @@ class RoiFrame extends StatelessWidget {
     );
   }
 
-  Widget _buildBorder(MultiFrameBlock bloc, RoiData roiData) {
-    RoiFrameModel frameData = bloc.frames[frameIndex];
+  Widget _buildBorder(MultiFrameBlock bloc, LensData roiData) {
+    LensModel frameData = bloc.frames[frameIndex];
     double _top =
         [frameData.firstCorner.dy, frameData.secondCorner.dy].reduce(min);
     double _left =
@@ -223,7 +223,7 @@ class RoiFrame extends StatelessWidget {
 
     Widget _buildBorderBackground(MultiFrameBlock bloc) {
       int alpha = bloc.selectedFrameIndex == this.frameIndex ? 100 : 50;
-      RoiFrameModel frameData = bloc.frames[frameIndex];
+      LensModel frameData = bloc.frames[frameIndex];
       if (frameData.isMMM) {
         Color borderColor = Colors.transparent;
         double sizeFactor = 0.495;
@@ -323,7 +323,7 @@ class RoiFrame extends StatelessWidget {
     );
   }
 
-  Widget _buildFrame(MultiFrameBlock bloc, RoiData roiData) {
+  Widget _buildFrame(MultiFrameBlock bloc, LensData roiData) {
     getLatestImage(roiData);
     return Stack(children: <Widget>[
       _buildBorder(bloc, roiData),
@@ -334,7 +334,7 @@ class RoiFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    RoiData roiData = RoiData();
+    LensData roiData = LensData();
     setTagColorFromCertainty(roiData);
     setBackgroundColorsFromCertainty(roiData);
     return _buildFrame(bloc, roiData);

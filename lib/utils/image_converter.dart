@@ -49,7 +49,7 @@ class ImageConverter {
     List<num> screenSize = cropData['screenSize'];
     imglib.Image image = img;
     image = imglib.copyRotate(image, 90);
-    cropData['frames'].forEach((RoiFrameModel frame) {
+    cropData['frames'].forEach((LensModel frame) {
       if (frame.isMMM) {
         double subFrameSizeFactor = 0.6;
         double frameWidth =
@@ -206,7 +206,7 @@ class ImageConverter {
   static Future<imglib.Image> cropRotate(Map<String, dynamic> cropData) async {
     imglib.Image image = cropData['image'];
     image = imglib.copyRotate(image, 90);
-    RoiFrameModel frame = cropData['frames'][0];
+    LensModel frame = cropData['frames'][0];
     List<num> screenSize = cropData['screenSize'];
     int x0 = (frame.firstCorner.dx / screenSize[0] * image.width).round();
     int y0 = (frame.firstCorner.dy / screenSize[1] * image.height).round();
@@ -224,7 +224,7 @@ class ImageConverter {
     List<num> screenSize = cropData['screenSize'];
     imglib.Image image = cropData['image'];
     image = imglib.copyRotate(image, 90);
-    cropData['frames'].forEach((RoiFrameModel frame) {
+    cropData['frames'].forEach((LensModel frame) {
       int x0 = (frame.firstCorner.dx / screenSize[0] * image.width).round();
       int y0 = (frame.firstCorner.dy / screenSize[1] * image.height).round();
       int x1 = (frame.secondCorner.dx / screenSize[0] * image.width).round();
